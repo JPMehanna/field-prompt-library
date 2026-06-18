@@ -230,6 +230,38 @@ html[data-theme="dark"] .ins-eyebrow{color:#5fd3ea; background:rgba(95,211,234,.
 .usecase .toolbadge{cursor:default}
 .usecase .cat{display:inline-flex; align-items:center; gap:5px}
 
+/* ===== Submit pill + modal + community badge ===== */
+.navpill-submit{color:#fff; background:linear-gradient(135deg,#ff7a52,#ff4d6d); border-color:transparent; box-shadow:0 6px 16px rgba(255,90,90,.32)}
+.navpill-submit:hover{transform:translateY(-1px); box-shadow:0 9px 22px rgba(255,90,90,.45); border-color:transparent}
+html[data-theme="dark"] .navpill-submit{color:#fff; background:linear-gradient(135deg,#ff7a52,#ff4d6d)}
+.modal-overlay{position:fixed; inset:0; z-index:1000; display:none; align-items:flex-start; justify-content:center; padding:5vh 18px; background:rgba(16,10,32,.55); backdrop-filter:blur(6px); overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{position:relative; width:100%; max-width:660px; background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:30px 30px 24px; box-shadow:var(--shadow-lg); animation:mIn .22s cubic-bezier(.2,.8,.2,1)}
+@keyframes mIn{from{opacity:0; transform:translateY(14px) scale(.98)}to{opacity:1; transform:none}}
+.modal-x{position:absolute; top:16px; right:16px; width:34px; height:34px; border-radius:10px; border:1px solid var(--border); background:var(--surface-soft); color:var(--text-muted); cursor:pointer; font-size:.95rem; transition:.15s}
+.modal-x:hover{color:var(--text); border-color:var(--border-strong)}
+.modal-eyebrow{display:inline-flex; align-items:center; gap:7px; font-size:.7rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#ff5d6e; margin-bottom:10px}
+.modal h2{font-size:1.5rem; font-weight:800; color:var(--text); letter-spacing:-.01em; margin-bottom:8px}
+.modal-sub{font-size:.9rem; color:var(--text-muted); line-height:1.55; margin-bottom:20px}
+.modal-sub code{font-family:"Roboto Mono",monospace; font-size:.82em; background:var(--surface-soft); border:1px solid var(--border); border-radius:5px; padding:1px 5px; color:var(--teal)}
+.form-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.fld{display:flex; flex-direction:column; gap:6px; min-width:0}
+.fld.span2{grid-column:1 / -1}
+.fld label{font-size:.8rem; font-weight:700; color:var(--text)}
+.fld label .opt{font-weight:400; color:var(--text-soft)}
+.fld input, .fld select, .fld textarea{width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--bg-elevated,var(--surface-soft)); color:var(--text); font-family:inherit; font-size:.9rem; outline:none; transition:border-color .15s, box-shadow .15s}
+.fld textarea{resize:vertical; font-family:"Roboto Mono",monospace; line-height:1.55}
+.fld input:focus, .fld select:focus, .fld textarea:focus{border-color:var(--teal); box-shadow:0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent)}
+.modal-err{color:var(--danger,#dc2626); font-size:.84rem; font-weight:600; margin-top:12px; min-height:18px}
+.modal-actions{display:flex; align-items:center; gap:10px; margin-top:18px; flex-wrap:wrap}
+.modal-actions .ma-spacer{flex:1}
+.submit-go{background:linear-gradient(135deg,#ff7a52,#ff4d6d) !important; color:#fff !important; border-color:transparent !important; box-shadow:0 8px 20px rgba(255,90,90,.32)}
+.card.community{--toolc:#7c4dff}
+.card .commbadge{display:inline-flex; align-items:center; gap:5px; font-size:.66rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:#fff; background:linear-gradient(135deg,#8b5cf6,#6366f1); padding:3px 9px; border-radius:999px; margin-left:6px}
+.card .card-remove{margin-left:auto; cursor:pointer; background:none; border:none; color:var(--text-soft); font-size:.95rem; padding:2px 4px; transition:.15s}
+.card .card-remove:hover{color:var(--danger,#dc2626)}
+@media(max-width:560px){ .form-grid{grid-template-columns:1fr} .modal{padding:24px 18px 18px} }
+
 /* ===== Toolbar ===== */
 .wrap{max-width:1440px; margin:0 auto; padding:0 40px}
 .controls{position:sticky; top:0; z-index:40; padding:22px 0 14px; background:linear-gradient(var(--bg) 70%, transparent); margin-top:44px}
@@ -536,6 +568,7 @@ body.loaded [data-load="6"]{transition-delay:.35s}
     <button class="navpill" onclick="goLibrary()"><span class="np-ic">▦</span> Tools</button>
     <button class="navpill" onclick="goBrowse()"><span class="np-ic">🗂</span> Categories</button>
     <button class="navpill navpill-ins" onclick="goInsurance()"><span class="np-ic">🏛</span> Insurance</button>
+    <button class="navpill navpill-submit" onclick="openSubmit()"><span class="np-ic">➕</span> Submit a prompt</button>
   </div>
   <div class="hero-inner">
     <div class="hero-left">
@@ -659,6 +692,53 @@ body.loaded [data-load="6"]{transition-delay:.35s}
     <div id="footStats"></div>
   </div>
 </footer>
+
+<!-- SUBMIT A PROMPT MODAL -->
+<div class="modal-overlay" id="submitOverlay" onclick="if(event.target===this)closeSubmit()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="submitTitle">
+    <button class="modal-x" onclick="closeSubmit()" aria-label="Close">✕</button>
+    <div class="modal-eyebrow">➕ Community contribution</div>
+    <h2 id="submitTitle">Submit a prompt</h2>
+    <p class="modal-sub">Share a prompt that worked for you. It's added to your library instantly and you can send it for review to be published for everyone. No names are collected — keep prompts generic and bracketed like <code>[account]</code>.</p>
+    <div class="form-grid">
+      <div class="fld">
+        <label for="sb-tool">Tool *</label>
+        <select id="sb-tool"></select>
+      </div>
+      <div class="fld">
+        <label for="sb-cat">Category *</label>
+        <input id="sb-cat" type="text" placeholder="e.g. Account Planning, Inbox Triage" />
+      </div>
+      <div class="fld span2">
+        <label for="sb-title">Title *</label>
+        <input id="sb-title" type="text" placeholder="Short, action-oriented name" />
+      </div>
+      <div class="fld span2">
+        <label for="sb-desc">One-line description *</label>
+        <input id="sb-desc" type="text" placeholder="What this prompt does in a sentence" />
+      </div>
+      <div class="fld span2">
+        <label for="sb-prompt">The prompt *</label>
+        <textarea id="sb-prompt" rows="6" placeholder="Paste the full prompt. Use [brackets] for the parts people swap in — e.g. [account], [date], [line of business]."></textarea>
+      </div>
+      <div class="fld">
+        <label for="sb-tags">Tags <span class="opt">(comma-separated)</span></label>
+        <input id="sb-tags" type="text" placeholder="planning, pipeline, recap" />
+      </div>
+      <div class="fld">
+        <label for="sb-role">Best for role <span class="opt">(optional)</span></label>
+        <select id="sb-role"></select>
+      </div>
+    </div>
+    <div class="modal-err" id="sb-err"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="copySubmissionJSON()">⧉ Copy as JSON</button>
+      <div class="ma-spacer"></div>
+      <button class="btn" onclick="addSubmissionLocal()">＋ Add to my library</button>
+      <button class="btn primary submit-go" onclick="submitToGitHub()">🚀 Submit for review</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -1159,6 +1239,11 @@ const FAVS=new Set(JSON.parse(localStorage.getItem("fpl-favs")||"[]"));
 const COPYCOUNT=JSON.parse(localStorage.getItem("fpl-copycount")||"{}");
 const pid=p=>p.tool+"|"+p.title;
 
+/* Community submissions (stored in this browser; merged into the library) */
+const REPO_SLUG="JPMehanna/field-prompt-library";
+let SUBMISSIONS=JSON.parse(localStorage.getItem("fpl-submissions")||"[]");
+SUBMISSIONS.forEach(s=>{ s.community=true; if(!PROMPTS.some(p=>pid(p)===pid(s))) PROMPTS.push(s); });
+
 const INDUSTRIES=["Financial Services","Banking & Capital Markets","Insurance","Healthcare & Life Sciences","Pharmaceuticals & Biotech","Retail & Consumer Goods","Manufacturing","Automotive & Mobility","Aerospace & Defense","Energy & Utilities","Oil & Gas","Public Sector & Government","Education","Nonprofit & NGO","Telco, Media & Gaming","Travel, Transport & Logistics","Hospitality","Real Estate & Construction","Professional Services","Agriculture","Sports & Entertainment"];
 const AGENTS={
   "":{label:"Open: copy only", url:""},
@@ -1411,6 +1496,105 @@ function goBrowse(){document.getElementById("browse").scrollIntoView({behavior:"
 function goInsurance(){document.getElementById("insurance").scrollIntoView({behavior:"smooth"});}
 function heroGo(){const h=document.getElementById("heroSearch"); const s=document.getElementById("search"); if(s)s.value=h.value; render(); document.getElementById("library").scrollIntoView({behavior:"smooth"});}
 
+/* ============================ SUBMIT A PROMPT ============================ */
+function buildSubmitSelects(){
+  const tool=document.getElementById("sb-tool");
+  if(tool && !tool.options.length){
+    tool.innerHTML=Object.keys(TOOLS).map(t=>`<option value="${t}">${t}</option>`).join("");
+  }
+  const role=document.getElementById("sb-role");
+  if(role && !role.options.length){
+    role.innerHTML=`<option value="">— Any / not sure —</option>`+ROLES.map(r=>`<option value="${r.short}">${r.short}</option>`).join("");
+  }
+}
+function openSubmit(){
+  buildSubmitSelects();
+  document.getElementById("sb-err").textContent="";
+  document.getElementById("submitOverlay").classList.add("open");
+  document.body.style.overflow="hidden";
+  setTimeout(()=>document.getElementById("sb-title").focus(),60);
+}
+function closeSubmit(){
+  document.getElementById("submitOverlay").classList.remove("open");
+  document.body.style.overflow="";
+}
+function readSubmission(){
+  const v=id=>document.getElementById(id).value.trim();
+  const tags=v("sb-tags").split(",").map(t=>t.trim().replace(/^#/,"")).filter(Boolean);
+  const role=v("sb-role");
+  if(role) tags.unshift(role);
+  return { tool:v("sb-tool"), cat:v("sb-cat"), title:v("sb-title"), desc:v("sb-desc"),
+           tags:tags.length?tags:["community"], prompt:v("sb-prompt") };
+}
+function validateSubmission(s){
+  if(!s.tool) return "Pick a tool.";
+  if(!s.cat) return "Add a category.";
+  if(!s.title) return "Add a title.";
+  if(!s.desc) return "Add a one-line description.";
+  if(s.prompt.length<20) return "The prompt looks too short — paste the full prompt.";
+  if(/\b(my name is|submitted by|—\s*[A-Z][a-z]+\s+[A-Z][a-z]+)\b/.test(s.prompt)) return "Please remove any names — prompts must stay generic.";
+  return "";
+}
+function addSubmissionLocal(){
+  const s=readSubmission(); const err=validateSubmission(s);
+  const e=document.getElementById("sb-err"); if(err){e.textContent=err; return false;}
+  s.community=true;
+  if(PROMPTS.some(p=>pid(p)===pid(s))){ e.textContent="A prompt with that tool + title already exists. Tweak the title."; return false; }
+  SUBMISSIONS.push(s); localStorage.setItem("fpl-submissions",JSON.stringify(SUBMISSIONS));
+  PROMPTS.push(s);
+  buildHeroStats(); buildToolChips(); buildRoleChips(); buildCatOptions(); render();
+  closeSubmit();
+  toast(`Added "${s.title}" to your library — look for the ★ Community badge`);
+  return true;
+}
+function removeSubmission(id){
+  SUBMISSIONS=SUBMISSIONS.filter(s=>pid(s)!==id);
+  localStorage.setItem("fpl-submissions",JSON.stringify(SUBMISSIONS));
+  const i=PROMPTS.findIndex(p=>pid(p)===id && p.community); if(i>=0) PROMPTS.splice(i,1);
+  buildHeroStats(); buildToolChips(); buildRoleChips(); buildCatOptions(); render();
+  toast("Removed from your library");
+}
+function copySubmissionJSON(){
+  const s=readSubmission(); const err=validateSubmission(s);
+  const e=document.getElementById("sb-err"); if(err){e.textContent=err; return;}
+  const obj={tool:s.tool,cat:s.cat,title:s.title,desc:s.desc,tags:s.tags,prompt:s.prompt};
+  const json="{tool:"+JSON.stringify(s.tool)+",cat:"+JSON.stringify(s.cat)+",title:"+JSON.stringify(s.title)+",desc:"+JSON.stringify(s.desc)+",tags:"+JSON.stringify(s.tags)+",\nprompt:`"+s.prompt.replace(/`/g,"\\`")+"`},";
+  navigator.clipboard.writeText(json).then(()=>toast("Copied as JSON — paste into the PROMPTS array")).catch(()=>toast("Copy failed"));
+}
+function submitToGitHub(){
+  const s=readSubmission(); const err=validateSubmission(s);
+  const e=document.getElementById("sb-err"); if(err){e.textContent=err; return;}
+  // save locally too so the submitter keeps it
+  if(!PROMPTS.some(p=>pid(p)===pid(s))){ s.community=true; SUBMISSIONS.push(s); localStorage.setItem("fpl-submissions",JSON.stringify(SUBMISSIONS)); PROMPTS.push(s); buildHeroStats(); buildToolChips(); buildCatOptions(); render(); }
+  const title=`[Prompt] ${s.tool} · ${s.title}`;
+  const body=
+`### New prompt submission
+
+**Tool:** ${s.tool}
+**Category:** ${s.cat}
+**Title:** ${s.title}
+**Description:** ${s.desc}
+**Tags:** ${s.tags.join(", ")}
+
+**Prompt**
+\`\`\`
+${s.prompt}
+\`\`\`
+
+---
+_Ready-to-paste JSON for the PROMPTS array:_
+\`\`\`js
+{tool:${JSON.stringify(s.tool)},cat:${JSON.stringify(s.cat)},title:${JSON.stringify(s.title)},desc:${JSON.stringify(s.desc)},tags:${JSON.stringify(s.tags)},
+prompt:\`${s.prompt.replace(/`/g,"\\`")}\`},
+\`\`\`
+`;
+  const url=`https://github.com/${REPO_SLUG}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent("prompt-submission")}`;
+  window.open(url,"_blank","noopener");
+  closeSubmit();
+  toast("Opening GitHub to submit for review — sign in and click “Create”.");
+}
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){const o=document.getElementById("submitOverlay"); if(o&&o.classList.contains("open"))closeSubmit();} });
+
 /* ============================ RENDER ============================ */
 function escapeHtml(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
 function highlightVars(s){return escapeHtml(s).replace(/\[[^\]]+\]/g,m=>`<span class="vr">${m}</span>`);}
@@ -1436,11 +1620,12 @@ function getFiltered(){
 
 function cardHTML(p){
   const id=pid(p), on=FAVS.has(id), cc=COPYCOUNT[id]||0;
-  return `<article class="card" style="--toolc:${TOOLS[p.tool].c}">
+  return `<article class="card${p.community?' community':''}" style="--toolc:${TOOLS[p.tool].c}">
     <div class="card-top">
       <span class="toolbadge" title="Open ${p.tool}" style="cursor:pointer" onclick='openTool(${JSON.stringify(p.tool)})'><span class="dot" style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.85)"></span>${p.tool} ↗</span>
       <span class="cat">${p.cat}${cc?` · copied ${cc}×`:""}</span>
-      <button class="star ${on?'on':''}" title="Favorite" onclick='toggleFav(${JSON.stringify(id)})'>${on?'★':'☆'}</button>
+      ${p.community?`<span class="commbadge" title="Community submission saved on this device">★ Community</span>`:""}
+      ${p.community?`<button class="card-remove" title="Remove from my library" onclick='removeSubmission(${JSON.stringify(id)})'>🗑</button>`:`<button class="star ${on?'on':''}" title="Favorite" onclick='toggleFav(${JSON.stringify(id)})'>${on?'★':'☆'}</button>`}
     </div>
     <h3>${escapeHtml(p.title)}</h3>
     <div class="desc">${escapeHtml(p.desc)}</div>
@@ -1692,7 +1877,7 @@ document.getElementById("grid").addEventListener("pointermove",e=>{
 });
 
 /* ============================ BOOT ============================ */
-syncThemeBtn(); buildHeroStats(); buildHeroChips(); buildFeaturedRotation(); buildBrowsePills(); buildRoleChips(); buildToolChips(); buildLaunchRail(); buildCatOptions(); buildExtraSelects(); buildInsChips(); renderInsurance(); syncAgentVisibility(); syncFavBtns(); syncGroupBtn(); render();
+syncThemeBtn(); buildHeroStats(); buildHeroChips(); buildFeaturedRotation(); buildBrowsePills(); buildRoleChips(); buildToolChips(); buildLaunchRail(); buildCatOptions(); buildExtraSelects(); buildSubmitSelects(); buildInsChips(); renderInsurance(); syncAgentVisibility(); syncFavBtns(); syncGroupBtn(); render();
 requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.add("loaded")));
 </script>
 </body>
