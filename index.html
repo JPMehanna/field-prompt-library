@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Field Prompt Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --navy:#1A1446; --navy-2:#2A2160; --teal:#06748C; --teal-2:#0A93B0;
+  --bg:#F4F6F7; --bg-2:#EAEEF0; --surface:#FFFFFF; --surface-soft:#F7F9FA;
+  --border:#E2E7EA; --border-strong:#C9D2D7;
+  --text:#1A1446; --text-muted:#5A6672; --text-soft:#7B8794;
+  --accent:#06748C; --accent-fg:#FFFFFF;
+  --shadow:0 4px 14px rgba(26,20,70,.06), 0 1px 3px rgba(26,20,70,.08);
+  --shadow-lg:0 18px 48px rgba(26,20,70,.14);
+  --radius:16px; --radius-sm:10px;
+  --gold:#E5A000;
+  color-scheme:light;
+}
+html[data-theme="dark"]{
+  --navy:#0E0A26; --navy-2:#1A1446; --teal:#19B5D6; --teal-2:#36C9E6;
+  --bg:#15131F; --bg-2:#1B1830; --surface:#211D34; --surface-soft:#1A1729;
+  --border:#322C4A; --border-strong:#473F66;
+  --text:#ECEAF4; --text-muted:#A7A1C0; --text-soft:#857E9E;
+  --accent:#36C9E6; --accent-fg:#0E0A26;
+  --shadow:0 4px 14px rgba(0,0,0,.30), 0 1px 3px rgba(0,0,0,.40);
+  --shadow-lg:0 18px 48px rgba(0,0,0,.50);
+  --gold:#F0B92E;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Roboto","Segoe UI",-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.55;
+  -webkit-font-smoothing:antialiased; transition:background .3s, color .3s;
+}
+a{color:var(--teal); text-decoration:none}
+::selection{background:var(--teal); color:#fff}
+
+/* ===== Top bar (over hero) ===== */
+.topbar{max-width:1440px; margin:0 auto; padding:22px 40px 6px; display:flex; align-items:center; gap:14px; position:relative; z-index:3}
+.brand{display:flex; align-items:center; gap:12px; font-weight:800; letter-spacing:.16em; font-size:1rem; color:#1c1740; white-space:nowrap}
+.brand .logo{width:38px; height:38px; border-radius:12px; background:linear-gradient(140deg,#8b5cf6 0%,#6366f1 55%,#3b82f6 100%); display:grid; place-items:center; color:#ffd34d; font-size:1.25rem; flex-shrink:0; box-shadow:0 6px 20px rgba(124,77,255,.45), inset 0 1px 0 rgba(255,255,255,.25)}
+.topbar-spacer{flex:1}
+.navpill{display:inline-flex; align-items:center; gap:9px; font-family:inherit; font-size:.9rem; font-weight:600; color:#3a3558; background:#ffffff; border:1px solid #e6e2f0; padding:9px 16px; border-radius:11px; cursor:pointer; transition:.15s; box-shadow:0 3px 10px rgba(70,50,130,.06)}
+.navpill:hover{border-color:#cfc8e6; transform:translateY(-1px); box-shadow:0 6px 16px rgba(70,50,130,.10)}
+.navpill .np-ic{font-size:.95rem; opacity:.85}
+html[data-theme="dark"] .brand{color:#fff}
+html[data-theme="dark"] .navpill{color:#e7e5f5; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.16); box-shadow:none}
+html[data-theme="dark"] .navpill:hover{background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.3)}
+
+/* ===== Hero (light pastel) ===== */
+.hero{position:relative; overflow:hidden; color:#14102e;
+  background:
+    radial-gradient(720px 620px at 92% 16%, rgba(176,188,255,.50) 0%, transparent 60%),
+    radial-gradient(640px 520px at 6% 96%, rgba(255,196,216,.45) 0%, transparent 60%),
+    radial-gradient(760px 640px at 102% 104%, rgba(184,222,255,.45) 0%, transparent 62%),
+    linear-gradient(160deg,#f4f1fb 0%,#f7f2f7 48%,#eef2fd 100%);
+  padding-bottom:38px;}
+.hero::after{content:""; position:absolute; inset:0; background:none; pointer-events:none}
+.hero-inner{max-width:1440px; margin:0 auto; padding:30px 40px 8px; position:relative; z-index:2; display:grid; grid-template-columns:1.12fr .88fr; gap:40px; align-items:start}
+.hero-left{min-width:0}
+.hero h1{font-size:clamp(2.2rem,5vw,3.9rem); line-height:1.04; font-weight:800; letter-spacing:-.025em; margin:6px 0 16px; color:#14102e}
+.hero h1 em{font-style:normal; background:linear-gradient(90deg,#ff7a6b,#ff4d6d); -webkit-background-clip:text; background-clip:text; color:transparent}
+.hero p.sub{font-size:clamp(.98rem,1.4vw,1.12rem); max-width:560px; color:#5b5775; font-weight:400; line-height:1.6}
+.hero-search{margin-top:26px; max-width:600px; position:relative}
+.hero-search::after{content:""; position:absolute; inset:0; background:none; pointer-events:none}
+.hero-search::before{content:""; position:absolute; inset:0; background:none; pointer-events:none}
+.hero-search input{width:100%; padding:16px 110px 16px 50px; border-radius:15px; border:1px solid #e4e0f0; background:#ffffff; color:#2a2545; font-size:1.02rem; font-family:inherit; box-shadow:0 8px 24px rgba(70,50,130,.08), 0 1px 2px rgba(70,50,130,.06); outline:none; transition:box-shadow .25s, transform .2s, border-color .25s}
+.hero-search input:hover{border-color:#d6d0ea}
+.hero-search input::placeholder{color:#9a95b2}
+.hero-search .si{position:absolute; left:17px; top:50%; transform:translateY(-50%); width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; color:#8a84a8; pointer-events:none; transition:color .25s}
+.hero-search .si svg{width:20px; height:20px; display:block}
+.hero-search:focus-within .si{color:#ff5d6e}
+.hero-search kbd{position:absolute; right:14px; top:50%; transform:translateY(-50%); font-family:"Roboto Mono",monospace; font-size:.7rem; letter-spacing:.02em; color:#8a84a8; border:1px solid #e4e0f0; border-radius:7px; padding:3px 9px; background:#f6f4fb; pointer-events:none}
+.hero-chips{display:flex; flex-wrap:wrap; gap:9px; margin-top:18px; max-width:600px}
+.hero-chip{display:inline-flex; align-items:center; gap:8px; background:#ffffff; border:1px solid #e8e4f2; color:#2a2545; padding:6px 12px 6px 6px; border-radius:11px; font-size:.83rem; font-weight:600; cursor:pointer; transition:.15s; white-space:nowrap; box-shadow:0 3px 10px rgba(70,50,130,.06)}
+.hero-chip:hover{border-color:#cfc8e6; transform:translateY(-2px); box-shadow:0 6px 16px rgba(70,50,130,.10)}
+.hero-chip .hc-ic{width:24px; height:24px; border-radius:7px; display:grid; place-items:center; font-size:.8rem; color:#fff; flex-shrink:0}
+
+/* ===== Featured card (light) ===== */
+.featured{border:1px solid #eae7f3; border-radius:20px; padding:24px 24px 22px; position:relative;
+  display:flex; flex-direction:column;
+  background:#ffffff;
+  box-shadow:0 12px 44px rgba(80,60,140,.13), 0 2px 6px rgba(80,60,140,.06)}
+.featured .feat-tile{position:absolute; top:22px; right:22px; width:52px; height:52px; border-radius:13px; background:rgba(124,77,255,.10); border:1px solid rgba(124,77,255,.30); display:grid; place-items:center; font-size:1.35rem; box-shadow:inset 0 0 14px rgba(124,77,255,.10)}
+.featured .feat-eyebrow{display:inline-flex; align-items:center; gap:7px; font-size:.7rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#ff5d6e}
+.featured h2{font-size:1.6rem; font-weight:800; color:#14102e; margin:12px 0 10px; letter-spacing:-.01em; max-width:80%}
+.featured .feat-desc{font-size:.94rem; color:#5b5775; line-height:1.6; margin-bottom:16px; padding-bottom:16px; border-bottom:1px solid #ece9f4}
+.featured .feat-desc .vr{color:#4f7cff; font-weight:600}
+.featured .feat-meta{display:flex; flex-direction:column; gap:9px; margin-bottom:18px}
+.featured .feat-meta div{display:flex; align-items:center; gap:10px; font-size:.92rem; color:#4a4566}
+.featured .feat-meta .fm-ic{width:24px; height:24px; border-radius:6px; background:rgba(80,60,140,.07); display:grid; place-items:center; font-size:.8rem; flex-shrink:0}
+.featured .feat-copy{align-self:flex-start; margin-top:auto; display:inline-flex; align-items:center; gap:9px; font-family:inherit; font-size:.98rem; font-weight:800; color:#ffffff; background:linear-gradient(135deg,#ffb24d 0%,#ff7a52 52%,#ff4d6d 100%); border:none; padding:13px 24px; border-radius:12px; cursor:pointer; transition:.18s; box-shadow:0 8px 22px rgba(255,90,90,.30)}
+.featured .feat-copy:hover{transform:translateY(-2px); box-shadow:0 12px 30px rgba(255,90,90,.42)}
+.hero-inner{perspective:1700px}
+.featured{transform-origin:center center; transform-style:preserve-3d}
+
+/* ===== Stats band (light) ===== */
+.hero-stats{max-width:1440px; margin:14px auto 0; padding:0 40px; position:relative; z-index:2}
+.hero-stats-inner{display:grid; grid-template-columns:repeat(4,1fr); border:1px solid #eae7f3; border-radius:20px; padding:22px 10px;
+  background:#ffffff;
+  box-shadow:0 12px 44px rgba(80,60,140,.11), 0 2px 6px rgba(80,60,140,.05)}
+.hstat{display:flex; align-items:center; gap:15px; padding:4px 22px; position:relative}
+.hstat+.hstat::before{content:""; position:absolute; left:0; top:8px; bottom:8px; width:1px; background:rgba(40,30,90,.08)}
+.hstat .hs-ic{width:54px; height:54px; border-radius:50%; display:grid; place-items:center; font-size:1.3rem; flex-shrink:0; border:1.5px solid currentColor}
+.hstat .n{font-size:2rem; font-weight:800; letter-spacing:-.02em; line-height:1; color:#14102e}
+.hstat .l{font-size:.82rem; color:#6b6788; margin-top:5px; line-height:1.25}
+
+/* ===== Hero dark-theme overrides (preserve neon look) ===== */
+html[data-theme="dark"] .hero{color:#fff;
+  background:
+    radial-gradient(820px 680px at 100% 36%, rgba(124,77,255,.30) 0%, transparent 58%),
+    radial-gradient(620px 420px at 84% 2%, rgba(95,211,234,.10) 0%, transparent 60%),
+    radial-gradient(700px 600px at 0% 100%, rgba(36,26,82,.55) 0%, transparent 60%),
+    linear-gradient(165deg,#06050f 0%,#0a0818 46%,#100a24 100%);}
+html[data-theme="dark"] .hero h1{color:#fff}
+html[data-theme="dark"] .hero p.sub{color:#c4c0e0}
+html[data-theme="dark"] .hero-search input{border:1px solid rgba(255,255,255,.08); background:linear-gradient(180deg, rgba(24,18,52,.72), rgba(14,10,32,.82)); color:#f1eff9; box-shadow:inset 0 1px 0 rgba(255,255,255,.07), 0 14px 44px rgba(8,4,24,.55); backdrop-filter:blur(12px)}
+html[data-theme="dark"] .hero-search input::placeholder{color:#9590b8}
+html[data-theme="dark"] .hero-search::after{background:linear-gradient(120deg, rgba(124,77,255,.9), rgba(95,211,234,.8), rgba(124,77,255,.6)); filter:blur(14px); opacity:.5; position:absolute; inset:-3px; border-radius:18px; z-index:-1}
+html[data-theme="dark"] .hero-search:focus-within::after{opacity:.85}
+html[data-theme="dark"] .hero-search::before{position:absolute; inset:-1.5px; border-radius:16px; padding:1.5px; background:linear-gradient(120deg, rgba(150,110,255,.95), rgba(120,225,245,.9), rgba(150,110,255,.6)); -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; opacity:.85; box-shadow:0 0 12px rgba(124,77,255,.5)}
+html[data-theme="dark"] .hero-search .si{color:#7ce6ff; filter:drop-shadow(0 0 5px rgba(95,211,234,.9)) drop-shadow(0 0 11px rgba(124,77,255,.65)); animation:siGlow 2.6s ease-in-out infinite}
+html[data-theme="dark"] .hero-search:focus-within .si{color:#aef0ff}
+html[data-theme="dark"] .hero-search kbd{color:#cfcae6; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06)}
+html[data-theme="dark"] .hero-chip{background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); color:#eceaf5; box-shadow:none}
+html[data-theme="dark"] .hero-chip:hover{background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.28)}
+html[data-theme="dark"] .featured{border:1px solid transparent;
+  background:linear-gradient(165deg, rgba(28,22,54,.72), rgba(14,11,30,.72)) padding-box,
+            linear-gradient(150deg, rgba(167,139,250,.85) 0%, rgba(99,102,241,.55) 38%, rgba(56,189,248,.7) 100%) border-box;
+  box-shadow:0 0 0 1px rgba(124,77,255,.12), 0 0 46px rgba(124,77,255,.30), 0 24px 60px rgba(0,0,0,.55); backdrop-filter:blur(10px)}
+html[data-theme="dark"] .featured h2{color:#fff}
+html[data-theme="dark"] .featured .feat-desc{color:#c4c0e0; border-bottom:1px solid rgba(255,255,255,.1)}
+html[data-theme="dark"] .featured .feat-desc .vr{color:#6fe3f5}
+html[data-theme="dark"] .featured .feat-meta div{color:#d9d6ee}
+html[data-theme="dark"] .featured .feat-meta .fm-ic{background:rgba(255,255,255,.08)}
+html[data-theme="dark"] .featured .feat-copy{color:#3a1206; box-shadow:0 0 26px rgba(255,110,90,.55), 0 8px 22px rgba(255,77,109,.4)}
+html[data-theme="dark"] .hero-stats-inner{border:1px solid transparent;
+  background:linear-gradient(150deg, rgba(22,17,42,.6), rgba(12,9,24,.6)) padding-box,
+            linear-gradient(120deg, rgba(124,77,255,.4), rgba(56,189,248,.25)) border-box;
+  box-shadow:0 0 40px rgba(124,77,255,.14), 0 16px 44px rgba(0,0,0,.45)}
+html[data-theme="dark"] .hstat+.hstat::before{background:rgba(255,255,255,.12)}
+html[data-theme="dark"] .hstat .l{color:#a7a2c8}
+
+/* ===== Hero eyebrow badge ===== */
+.hero-eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#ff5d6e; background:rgba(255,93,110,.08); border:1px solid rgba(255,93,110,.30); padding:8px 16px; border-radius:999px; margin-bottom:18px}
+.hero-eyebrow .he-ic{font-size:.85rem}
+html[data-theme="dark"] .hero-eyebrow{background:rgba(255,93,110,.12); border-color:rgba(255,93,110,.38)}
+
+/* ===== Search arrow button ===== */
+.hero-search .go-btn{position:absolute; right:8px; top:50%; transform:translateY(-50%); width:46px; height:46px; border:none; border-radius:50%; cursor:pointer; display:grid; place-items:center; color:#fff; background:linear-gradient(135deg,#ffb24d 0%,#ff7a52 50%,#ff4d6d 100%); box-shadow:0 6px 18px rgba(255,90,90,.40); transition:.18s}
+.hero-search .go-btn:hover{transform:translateY(-50%) scale(1.06); box-shadow:0 8px 24px rgba(255,90,90,.55)}
+.hero-search .go-btn svg{width:20px; height:20px}
+
+/* ===== Hero side column (Weekly saves + Top tools) ===== */
+.hero-side{display:flex; flex-direction:column; gap:18px; min-width:0}
+.side-card{background:#ffffff; border:1px solid #eae7f3; border-radius:20px; padding:20px 22px; box-shadow:0 12px 44px rgba(80,60,140,.12), 0 2px 6px rgba(80,60,140,.05)}
+html[data-theme="dark"] .side-card{background:linear-gradient(165deg, rgba(28,22,54,.72), rgba(14,11,30,.72)); border:1px solid rgba(124,77,255,.22); box-shadow:0 0 36px rgba(124,77,255,.18), 0 18px 48px rgba(0,0,0,.5); backdrop-filter:blur(10px)}
+.side-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px}
+.side-title{font-size:.95rem; font-weight:800; color:#14102e; letter-spacing:-.01em}
+html[data-theme="dark"] .side-title{color:#fff}
+.range-sel{font-family:inherit; font-size:.76rem; font-weight:700; color:#4a4566; background:#f6f4fb; border:1px solid #e4e0f0; border-radius:9px; padding:5px 9px; cursor:pointer; outline:none}
+html[data-theme="dark"] .range-sel{color:#cfcae6; background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.16)}
+/* Weekly saves */
+.ws-row{display:flex; align-items:baseline; gap:10px}
+.ws-num{font-size:2.3rem; font-weight:800; letter-spacing:-.02em; line-height:1; color:#14102e}
+html[data-theme="dark"] .ws-num{color:#fff}
+.ws-delta{display:inline-flex; align-items:center; gap:3px; font-size:.85rem; font-weight:700; color:#16a34a}
+.ws-delta.down{color:#e0455f}
+.ws-sub{font-size:.8rem; color:#6b6788; margin-top:4px}
+html[data-theme="dark"] .ws-sub{color:#a7a2c8}
+.ws-chart{margin-top:12px; width:100%; height:74px; display:block}
+/* Top tools */
+.tt-row{display:flex; align-items:center; gap:12px; margin-top:13px}
+.tt-row:first-of-type{margin-top:4px}
+.tt-ic{width:26px; height:26px; border-radius:7px; display:grid; place-items:center; color:#fff; font-size:.78rem; font-weight:700; flex-shrink:0}
+.tt-name{font-size:.86rem; font-weight:600; color:#2a2545; width:64px; flex-shrink:0}
+html[data-theme="dark"] .tt-name{color:#e7e5f5}
+.tt-track{flex:1; height:8px; border-radius:6px; background:#eee8f6; overflow:hidden}
+html[data-theme="dark"] .tt-track{background:rgba(255,255,255,.08)}
+.tt-fill{height:100%; border-radius:6px; transition:width .6s cubic-bezier(.4,0,.2,1)}
+.tt-pct{font-size:.82rem; font-weight:800; color:#14102e; width:38px; text-align:right; flex-shrink:0; font-variant-numeric:tabular-nums}
+html[data-theme="dark"] .tt-pct{color:#fff}
+
+/* ===== Stat band action links ===== */
+.hstat .l a{display:inline-flex; align-items:center; gap:5px; margin-top:6px; font-size:.78rem; font-weight:700; color:var(--accent); text-decoration:none; cursor:pointer; transition:gap .15s}
+.hstat .l a:hover{gap:9px}
+
+/* ===== Light section: How it works + Browse ===== */
+.lightsec{background:var(--bg); padding:46px 0 8px}
+.lightwrap{max-width:1440px; margin:0 auto; padding:0 40px}
+.sec-title{font-size:1.5rem; font-weight:800; color:var(--text); letter-spacing:-.01em; margin-bottom:22px}
+.how-steps{display:flex; align-items:flex-start; gap:8px; flex-wrap:wrap}
+.how-step{display:flex; align-items:flex-start; gap:16px; flex:1; min-width:260px}
+.how-ic{position:relative; width:74px; height:74px; border-radius:50%; flex-shrink:0; display:grid; place-items:center; font-size:1.65rem; background:radial-gradient(circle at 50% 40%, rgba(6,116,140,.12), rgba(6,116,140,.04)); border:1px solid var(--border)}
+.how-num{position:absolute; left:-26px; top:50%; transform:translateY(-50%); font-size:1.4rem; font-weight:800; color:var(--text-soft); opacity:.55}
+.how-tx h3{font-size:1.08rem; font-weight:700; color:var(--text); margin-bottom:5px}
+.how-tx p{font-size:.9rem; color:var(--text-muted); line-height:1.5; max-width:230px}
+.how-tx b{color:var(--teal); font-weight:700}
+.how-arrow{align-self:center; color:var(--border-strong); font-size:1.4rem; padding:0 4px; flex-shrink:0}
+.browse{margin-top:40px; padding-top:34px; border-top:1px solid var(--border)}
+.browse-pills{display:flex; flex-wrap:wrap; gap:12px}
+.browse-pill{display:inline-flex; align-items:center; gap:10px; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:13px 20px; border-radius:13px; font-size:.92rem; font-weight:600; cursor:pointer; transition:.15s; box-shadow:var(--shadow)}
+.browse-pill:hover{transform:translateY(-2px); border-color:var(--teal); color:var(--teal); box-shadow:var(--shadow-lg)}
+.browse-pill .bp-ic{font-size:1rem; opacity:.8}
+.browse-pill.viewall{color:var(--teal)}
+
+/* ===== Insurance (FSI) customer use cases ===== */
+.navpill-ins{color:#06748C; background:rgba(6,116,140,.07); border-color:rgba(6,116,140,.28)}
+.navpill-ins:hover{border-color:rgba(6,116,140,.5)}
+html[data-theme="dark"] .navpill-ins{color:#5fd3ea; background:rgba(95,211,234,.10); border-color:rgba(95,211,234,.28)}
+.insurance-sec{position:relative; padding-top:40px; margin-top:18px}
+.insurance-sec::before{content:""; position:absolute; left:0; right:0; top:0; height:1px; background:linear-gradient(90deg,transparent,var(--border) 18%,var(--border) 82%,transparent)}
+.ins-head{display:flex; align-items:flex-start; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:20px}
+.ins-eyebrow{display:inline-flex; align-items:center; gap:8px; font-size:.72rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#06748C; background:rgba(6,116,140,.08); border:1px solid rgba(6,116,140,.28); padding:7px 14px; border-radius:999px; margin-bottom:12px}
+html[data-theme="dark"] .ins-eyebrow{color:#5fd3ea; background:rgba(95,211,234,.10); border-color:rgba(95,211,234,.30)}
+.ins-sub{font-size:.96rem; color:var(--text-muted); max-width:780px; line-height:1.6}
+.ga-badge{display:inline-flex; align-items:center; gap:8px; font-size:.74rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:#fff; background:linear-gradient(135deg,#6366f1,#06748C); padding:10px 18px; border-radius:999px; box-shadow:0 8px 22px rgba(99,102,241,.32); white-space:nowrap; align-self:center}
+.ins-chips{display:flex; flex-wrap:wrap; gap:9px; margin-bottom:22px}
+.ins-chip{display:inline-flex; align-items:center; gap:8px; font-family:inherit; font-size:.85rem; font-weight:600; color:var(--text); background:var(--surface); border:1px solid var(--border); padding:8px 15px; border-radius:11px; cursor:pointer; transition:.15s; box-shadow:var(--shadow)}
+.ins-chip:hover{transform:translateY(-1px); border-color:var(--teal)}
+.ins-chip.active{background:var(--teal); color:#fff; border-color:var(--teal)}
+.ins-chip .ic-dot{width:9px; height:9px; border-radius:50%; flex-shrink:0}
+.ins-chip .cnt{font-size:.72rem; opacity:.72; font-weight:700}
+.usecase .toolbadge{cursor:default}
+.usecase .cat{display:inline-flex; align-items:center; gap:5px}
+
+/* ===== Toolbar ===== */
+.wrap{max-width:1440px; margin:0 auto; padding:0 40px}
+.controls{position:sticky; top:0; z-index:40; padding:22px 0 14px; background:linear-gradient(var(--bg) 70%, transparent); margin-top:44px}
+.chips{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.chip{
+  display:inline-flex; align-items:center; gap:7px; border:1px solid var(--border); background:var(--surface);
+  color:var(--text-muted); padding:8px 14px; border-radius:999px; font-size:.84rem; font-weight:500; cursor:pointer; transition:.15s;
+}
+.chip:hover{border-color:var(--border-strong); color:var(--text)}
+.chip .dot{width:9px; height:9px; border-radius:50%; flex-shrink:0}
+.chip.active{background:var(--navy); color:#fff; border-color:var(--navy)}
+html[data-theme="dark"] .chip.active{background:var(--teal); color:var(--accent-fg); border-color:var(--teal)}
+.chip .cnt{font-size:.72rem; opacity:.7; font-weight:700}
+.launchrail{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:11px; font-size:.8rem; color:var(--text-soft)}
+.launchrail .lbl{font-weight:600; color:var(--text-muted)}
+.launch{display:inline-flex; align-items:center; gap:6px; border:1px dashed var(--border-strong); background:var(--surface); color:var(--text-muted); padding:6px 11px; border-radius:9px; font-size:.8rem; font-weight:500; cursor:pointer; transition:.15s; text-decoration:none}
+.launch:hover{border-style:solid; color:#fff; border-color:var(--lc); background:var(--lc)}
+.launch .dot{width:8px; height:8px; border-radius:50%; background:var(--lc)}
+.launch:hover .dot{background:rgba(255,255,255,.9)}
+.toolrow{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:13px}
+.field{position:relative}
+.field input, .field select{
+  font-family:inherit; font-size:.86rem; padding:9px 14px; border-radius:10px; border:1px solid var(--border);
+  background:var(--surface); color:var(--text); outline:none; transition:.15s;
+}
+.field input{padding-left:34px; width:240px}
+.field .fi{position:absolute; left:11px; top:50%; transform:translateY(-50%); opacity:.5; font-size:.95rem}
+.field input:focus, .field select:focus{border-color:var(--teal); box-shadow:0 0 0 3px var(--accent-soft,rgba(6,116,140,.15))}
+.toolrow .spacer{flex:1}
+.btn{
+  font-family:inherit; font-size:.84rem; font-weight:600; padding:9px 15px; border-radius:10px; cursor:pointer;
+  border:1px solid var(--border); background:var(--surface); color:var(--text); transition:.15s; display:inline-flex; align-items:center; gap:7px;
+}
+.btn:hover{border-color:var(--teal); color:var(--teal)}
+.btn.primary{background:var(--teal); color:#fff; border-color:var(--teal)}
+.btn.primary:hover{background:var(--teal-2); color:#fff}
+.btn.active{background:var(--gold); border-color:var(--gold); color:#3a2c00}
+.resultline{font-size:.82rem; color:var(--text-soft); margin:6px 2px 0}
+
+/* ===== Cards ===== */
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:18px; padding:8px 0 60px}
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 18px 16px;
+  box-shadow:var(--shadow); display:flex; flex-direction:column; transition:.18s; position:relative; overflow:hidden;
+}
+.card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--toolc,var(--teal))}
+.card:hover{transform:translateY(-3px); box-shadow:var(--shadow-lg); border-color:var(--border-strong)}
+.card-top{display:flex; align-items:center; gap:8px; margin-bottom:11px}
+.toolbadge{display:inline-flex; align-items:center; gap:6px; font-size:.72rem; font-weight:700; letter-spacing:.03em; padding:4px 10px; border-radius:999px; color:#fff; background:var(--toolc)}
+.cat{font-size:.72rem; color:var(--text-soft); font-weight:500}
+.star{margin-left:auto; cursor:pointer; font-size:1.15rem; line-height:1; color:var(--border-strong); transition:.15s; background:none; border:none; padding:2px}
+.star:hover{transform:scale(1.18)}
+.star.on{color:var(--gold)}
+.card h3{font-size:1.08rem; letter-spacing:-.01em; margin-bottom:6px; line-height:1.25}
+.card .desc{font-size:.86rem; color:var(--text-muted); flex:1}
+.tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:12px}
+.tag{font-size:.7rem; color:var(--text-soft); background:var(--surface-soft); border:1px solid var(--border); padding:3px 9px; border-radius:7px; font-weight:500}
+.card-actions{display:flex; gap:8px; margin-top:14px}
+.card-actions .btn{flex:1; justify-content:center}
+.prompt-box{
+  margin-top:12px; background:var(--surface-soft); border:1px solid var(--border); border-radius:10px;
+  padding:13px 14px; font-family:"Roboto Mono",monospace; font-size:.8rem; line-height:1.6; color:var(--text);
+  white-space:pre-wrap; max-height:0; overflow:hidden; opacity:0; transition:max-height .3s, opacity .25s, padding .3s; padding-top:0; padding-bottom:0; border-width:0;
+}
+.prompt-box.open{max-height:1400px; opacity:1; padding:13px 14px; border-width:1px; overflow:auto}
+.prompt-box .vr{color:var(--teal); background:var(--accent-soft,rgba(6,116,140,.12)); border-radius:4px; padding:0 3px; font-weight:500}
+html[data-theme="dark"] .prompt-box .vr{color:var(--teal-2)}
+
+/* ===== Empty ===== */
+.empty{text-align:center; padding:70px 20px; color:var(--text-soft)}
+.empty .big{font-size:2.4rem; margin-bottom:8px}
+
+/* ===== Grouped / collapsible sections ===== */
+.grid.grouped{display:block; padding:8px 0 60px}
+.catsec{margin-bottom:14px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface-soft); overflow:hidden; box-shadow:var(--shadow)}
+.catsec-head{width:100%; display:flex; align-items:center; gap:12px; padding:14px 18px; background:none; border:none; cursor:pointer; font-family:inherit; color:var(--text); text-align:left; transition:background .15s}
+.catsec-head:hover{background:var(--surface)}
+.catsec-caret{font-size:.8rem; color:var(--text-soft); transition:transform .2s; flex-shrink:0}
+.catsec:not(.collapsed) .catsec-caret{transform:rotate(90deg)}
+.catsec-bar{width:4px; height:20px; border-radius:3px; flex-shrink:0}
+.catsec-title{font-weight:700; font-size:1.02rem; letter-spacing:-.01em}
+.catsec-count{margin-left:auto; font-size:.74rem; font-weight:700; color:var(--text-muted); background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:3px 11px}
+.catsec-body{display:grid; grid-template-rows:1fr; transition:grid-template-rows .28s ease}
+.catsec.collapsed .catsec-body{grid-template-rows:0fr}
+.catsec.collapsed .catsec-grid{padding-top:0; padding-bottom:0}
+.catsec-body>.catsec-grid{overflow:hidden; min-height:0}
+.catsec-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; padding:4px 16px 18px}
+
+/* ===== Toast ===== */
+.toast{
+  position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(140%);
+  background:var(--navy); color:#fff; padding:12px 22px; border-radius:12px; font-size:.88rem; font-weight:500;
+  box-shadow:var(--shadow-lg); z-index:100; transition:transform .3s cubic-bezier(.2,.8,.2,1); display:flex; align-items:center; gap:9px;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+html[data-theme="dark"] .toast{background:var(--teal); color:var(--accent-fg)}
+
+/* ===== Footer ===== */
+footer{border-top:1px solid var(--border); padding:34px 24px; margin-top:30px}
+.foot-inner{max-width:1280px; margin:0 auto; display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between; font-size:.82rem; color:var(--text-soft)}
+
+/* ===== Back to top ===== */
+.totop{position:fixed; bottom:26px; right:26px; z-index:50; opacity:0; pointer-events:none; transition:.25s}
+.totop.show{opacity:1; pointer-events:auto}
+
+@media(max-width:760px){
+  .steps-grid{grid-template-columns:1fr}
+  .topnav{display:none}
+  .field input{width:160px}
+  .hero{padding:54px 20px 50px}
+}
+@media print{
+  @page{margin:14mm}
+  body{padding-left:0 !important}
+  .topbar,.hero,.lightsec,.controls,.launchrail,.totop,.toast,footer,.card-actions,.star{display:none !important}
+  body{background:#fff !important; color:#000 !important}
+  .wrap{max-width:none; padding:0}
+  .grid{display:block; padding:0}
+  .catsec{break-inside:avoid; border:none !important; box-shadow:none !important; background:none !important; margin:0 0 6px}
+  .catsec.collapsed .catsec-body{grid-template-rows:1fr !important}
+  .catsec-head{padding:6px 0 !important; background:none !important}
+  .catsec-caret{display:none}
+  .catsec-title{font-size:13pt}
+  .catsec-count{border:1px solid #999 !important; background:none !important; color:#000 !important}
+  .catsec-grid{display:block; padding:0}
+  .card{break-inside:avoid; page-break-inside:avoid; box-shadow:none !important; border:1px solid #bbb !important; margin:0 0 12px; border-radius:8px; transform:none !important}
+  .card::before{display:none}
+  .card h3{font-size:13pt}
+  .card .desc{color:#333 !important}
+  .toolbadge{color:#000 !important; background:none !important; border:1px solid #999; padding:2px 8px}
+  .toolbadge .dot{display:none}
+  .tag{background:none !important; border:1px solid #ccc}
+  .prompt-box{max-height:none !important; opacity:1 !important; overflow:visible !important; padding:10px 12px !important; border:1px solid #ccc !important; border-width:1px !important; background:#f7f7f7 !important; color:#000 !important; font-size:9pt; white-space:pre-wrap}
+  .prompt-box .vr{background:none !important; color:#000 !important; font-weight:700}
+}
+
+/* ============================================================
+   ✦ POP LAYER — richer visuals, animations, depth (overrides)
+   ============================================================ */
+@keyframes fpFadeUp{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:translateY(0)}}
+@keyframes fpFloat{0%,100%{transform:translate(0,0)} 50%{transform:translate(0,-22px)}}
+@keyframes fpDrift{0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,18px) scale(1.08)}}
+@keyframes fpSheen{0%{background-position:-180% 0} 60%,100%{background-position:220% 0}}
+@keyframes fpPulse{0%,100%{opacity:.5} 50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none !important}}
+
+/* Animated background wash on the page */
+body{background:
+  radial-gradient(900px 520px at 100% -8%, color-mix(in srgb, var(--teal) 16%, transparent), transparent 60%),
+  radial-gradient(760px 480px at -6% 12%, color-mix(in srgb, var(--navy) 12%, transparent), transparent 58%),
+  var(--bg);
+  background-attachment:fixed;
+}
+
+/* ===== Hero: floating orbs, glow, animated gradient title ===== */
+.hero::before{content:""; position:absolute; width:520px; height:520px; border-radius:50%; top:-180px; right:-120px;
+  background:radial-gradient(circle at 30% 30%, rgba(150,170,255,.30), rgba(150,170,255,0) 62%); filter:blur(18px); animation:fpDrift 16s ease-in-out infinite; pointer-events:none; z-index:1}
+html[data-theme="dark"] .hero::before{background:radial-gradient(circle at 30% 30%, rgba(95,211,234,.40), rgba(95,211,234,0) 62%)}
+.hero h1{text-shadow:none}
+html[data-theme="dark"] .hero h1{text-shadow:0 2px 22px rgba(124,77,255,.28)}
+.hero h1 em{background:linear-gradient(100deg,#ff8a6b,#ff4d6d,#ff8a6b); background-size:220% auto; -webkit-background-clip:text; background-clip:text; animation:fpSheen 6s linear infinite; filter:drop-shadow(0 4px 18px rgba(255,77,109,.35))}
+.hero-search input{transition:box-shadow .25s, transform .2s, border-color .25s}
+.hero-search input:focus{transform:translateY(-2px); border-color:#c9b6f5; box-shadow:0 0 0 3px rgba(124,77,255,.14), 0 14px 38px rgba(70,50,130,.14)}
+html[data-theme="dark"] .hero-search input:focus{border-color:rgba(255,255,255,.08); box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 0 0 3px rgba(124,77,255,.18), 0 18px 50px rgba(8,4,24,.6)}
+.hstat .n{background:none; color:#14102e}
+html[data-theme="dark"] .hstat .n{background:linear-gradient(180deg,#ffffff,#cfeaf4); -webkit-background-clip:text; background-clip:text; color:transparent}
+@keyframes siGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(95,211,234,.7)) drop-shadow(0 0 9px rgba(124,77,255,.45))}50%{filter:drop-shadow(0 0 8px rgba(95,211,234,1)) drop-shadow(0 0 18px rgba(124,77,255,.75))}}
+
+/* ===== Steps: gradient edge, lift, sheen ===== */
+.step{position:relative; overflow:hidden; transition:transform .2s, box-shadow .2s, border-color .2s}
+.step::after{content:""; position:absolute; inset:0 0 auto 0; height:3px; background:linear-gradient(90deg,var(--navy),var(--teal)); opacity:.9}
+.step:hover{transform:translateY(-4px); box-shadow:var(--shadow-lg); border-color:var(--teal)}
+.step .num{background:linear-gradient(135deg,var(--navy),var(--teal)); color:#fff; box-shadow:0 6px 16px rgba(6,116,140,.35)}
+html[data-theme="dark"] .step .num{background:linear-gradient(135deg,var(--teal),#9ff0c4); color:#0E0A26}
+
+/* ===== Chips: gradient active + glow ===== */
+.chip{transition:transform .15s, box-shadow .15s, background .15s, color .15s, border-color .15s}
+.chip:hover{transform:translateY(-1px); box-shadow:var(--shadow)}
+.chip.active{background:linear-gradient(135deg,var(--navy),#3a2f73); box-shadow:0 6px 18px rgba(26,20,70,.30)}
+html[data-theme="dark"] .chip.active{background:linear-gradient(135deg,var(--teal),#0a93b0); box-shadow:0 6px 18px rgba(54,201,230,.30)}
+.chip.active .dot{box-shadow:0 0 8px currentColor}
+
+/* ===== Buttons: depth + shimmer on primary ===== */
+.btn{transition:transform .15s, box-shadow .15s, border-color .15s, color .15s, background .15s}
+.btn:hover{transform:translateY(-1px); box-shadow:var(--shadow)}
+.btn.primary{position:relative; overflow:hidden; background:linear-gradient(135deg,var(--teal),#0a93b0); border-color:transparent; box-shadow:0 6px 16px rgba(6,116,140,.32)}
+.btn.primary:hover{box-shadow:0 10px 26px rgba(6,116,140,.45)}
+.btn.primary::after{content:""; position:absolute; top:0; left:0; width:60%; height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent); transform:skewX(-20deg); animation:fpSheen 4.5s ease-in-out infinite}
+.btn.active{box-shadow:0 6px 16px rgba(229,160,0,.35)}
+
+/* ===== Cards: entrance, lush hover, animated accent, sheen ===== */
+.grid .card{animation:fpFadeUp .5s cubic-bezier(.2,.8,.2,1) both}
+.grid .card:nth-child(1){animation-delay:.02s}.grid .card:nth-child(2){animation-delay:.06s}
+.grid .card:nth-child(3){animation-delay:.10s}.grid .card:nth-child(4){animation-delay:.14s}
+.grid .card:nth-child(5){animation-delay:.18s}.grid .card:nth-child(6){animation-delay:.22s}
+.grid .card:nth-child(7){animation-delay:.26s}.grid .card:nth-child(8){animation-delay:.30s}
+.grid .card:nth-child(9){animation-delay:.34s}
+.card{transition:transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s, border-color .22s; backdrop-filter:saturate(120%)}
+.card::before{width:5px; background:linear-gradient(180deg, var(--toolc), color-mix(in srgb, var(--toolc) 30%, transparent))}
+.card::after{content:""; position:absolute; inset:0; border-radius:var(--radius); pointer-events:none; opacity:0; transition:opacity .25s;
+  background:radial-gradient(420px 180px at var(--mx,80%) 0%, color-mix(in srgb, var(--toolc) 16%, transparent), transparent 70%)}
+.card:hover{transform:translateY(-6px) scale(1.012); box-shadow:0 26px 60px color-mix(in srgb, var(--toolc) 22%, rgba(26,20,70,.18)); border-color:color-mix(in srgb, var(--toolc) 45%, var(--border))}
+.card:hover::after{opacity:1}
+.card:hover h3{color:var(--toolc)}
+.card h3{transition:color .2s}
+.toolbadge{background:linear-gradient(135deg, var(--toolc), color-mix(in srgb, var(--toolc) 70%, #000)); box-shadow:0 3px 10px color-mix(in srgb, var(--toolc) 40%, transparent); transition:transform .15s}
+.toolbadge:hover{transform:translateY(-1px) scale(1.04)}
+.star.on{filter:drop-shadow(0 0 6px rgba(229,160,0,.6))}
+.tag{transition:.15s}
+.tag:hover{border-color:var(--toolc); color:var(--toolc)}
+
+/* ===== Category sections: gradient header accent ===== */
+.catsec{transition:box-shadow .2s, border-color .2s}
+.catsec:hover{box-shadow:var(--shadow-lg)}
+.catsec-bar{box-shadow:0 0 10px color-mix(in srgb, var(--toolc, var(--teal)) 60%, transparent)}
+.catsec-count{transition:.15s}
+
+/* ===== Nav rail: glow on active, animated brand ===== */
+.fp-nav{box-shadow:2px 0 24px rgba(0,0,0,.28)}
+.fp-nav-item.active{box-shadow:inset 3px 0 0 var(--teal), 0 0 0 1px rgba(6,116,140,.18)}
+.fp-nav-item.active .fp-nav-ic{background:rgba(6,116,140,.35); box-shadow:0 0 12px rgba(6,116,140,.5)}
+.fp-nav-item .fp-nav-ic{transition:transform .15s, background .15s}
+.fp-nav-item:hover .fp-nav-ic{transform:scale(1.08)}
+.fp-nav-item .fp-nav-dot{box-shadow:0 0 8px currentColor}
+
+/* ===== Icon buttons + toast glow ===== */
+.iconbtn{transition:transform .15s, border-color .15s, color .15s, box-shadow .15s}
+.iconbtn:hover{box-shadow:0 6px 16px rgba(6,116,140,.22)}
+.toast{box-shadow:0 18px 48px rgba(6,116,140,.35), 0 0 0 1px rgba(255,255,255,.06)}
+
+/* ===== Custom scrollbar ===== */
+*{scrollbar-width:thin; scrollbar-color:var(--border-strong) transparent}
+::-webkit-scrollbar{width:11px; height:11px}
+::-webkit-scrollbar-thumb{background:var(--border-strong); border-radius:8px; border:3px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:var(--teal)}
+
+/* ===== Brand logo shimmer ===== */
+.brand .logo{box-shadow:0 6px 20px rgba(124,77,255,.55), inset 0 1px 0 rgba(255,255,255,.25); position:relative; overflow:hidden}
+.brand .logo::after{content:""; position:absolute; inset:0; background:linear-gradient(120deg,transparent,rgba(255,255,255,.5),transparent); transform:translateX(-100%); animation:fpSheen 5s ease-in-out infinite}
+
+/* ===== Compact controls + collapsible More panel ===== */
+.controls{padding:16px 0 10px; margin-top:34px}
+.controls .chips{margin-bottom:11px}
+.chip{padding:6px 12px; font-size:.82rem; gap:6px}
+.chip .cnt{font-size:.7rem}
+/* Role filter chips */
+.rolechips{display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:13px}
+.rolelbl{font-size:.7rem; font-weight:800; letter-spacing:.09em; text-transform:uppercase; color:var(--text-soft); margin-right:2px}
+.rolechip{display:inline-flex; align-items:center; gap:7px; font-family:inherit; font-size:.82rem; font-weight:700; color:var(--text); background:var(--surface); border:1px solid var(--border); padding:6px 13px; border-radius:999px; cursor:pointer; transition:.15s; box-shadow:var(--shadow)}
+.rolechip:hover{transform:translateY(-1px); border-color:var(--rc,var(--teal))}
+.rolechip.active{background:var(--rc,var(--teal)); color:#fff; border-color:var(--rc,var(--teal)); box-shadow:0 6px 16px color-mix(in srgb, var(--rc,var(--teal)) 35%, transparent)}
+.rolechip .rc-ic{font-size:.9rem}
+.rolechip .cnt{font-size:.7rem; opacity:.72; font-weight:700}
+.rolechip.active .cnt{opacity:.92}
+#moreBtn.active{background:var(--navy); color:#fff; border-color:var(--navy)}
+html[data-theme="dark"] #moreBtn.active{background:var(--teal); color:var(--accent-fg); border-color:var(--teal)}
+.morepanel{display:grid; grid-template-rows:0fr; transition:grid-template-rows .26s ease, opacity .2s, margin .2s; opacity:0; margin-top:0}
+.morepanel>*{overflow:hidden; min-height:0}
+.morepanel.open{grid-template-rows:1fr; opacity:1; margin-top:11px}
+.morepanel .moreinner{display:flex; flex-wrap:wrap; gap:14px 18px; align-items:center; padding:14px 16px; background:var(--surface); border:1px solid var(--border); border-radius:14px; box-shadow:var(--shadow)}
+.moregroup{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.moregroup .morelbl{font-size:.68rem; font-weight:800; letter-spacing:.10em; text-transform:uppercase; color:var(--text-soft); margin-right:2px}
+.morepanel .launchrail{margin-top:0; width:100%; padding-top:12px; border-top:1px solid var(--border)}
+.openbtn{display:none}
+body.agent-on .openbtn{display:inline-flex}
+
+/* ===== Linear-style staged load-in ===== */
+[data-load]{opacity:0; transform:translateY(18px); will-change:opacity,transform}
+body.loaded [data-load]{opacity:1; transform:none; transition:opacity .7s ease, transform .7s cubic-bezier(.2,.85,.25,1)}
+body.loaded [data-load="1"]{transition-delay:.00s}
+body.loaded [data-load="2"]{transition-delay:.07s}
+body.loaded [data-load="3"]{transition-delay:.14s}
+body.loaded [data-load="4"]{transition-delay:.21s}
+body.loaded [data-load="5"]{transition-delay:.28s}
+body.loaded [data-load="6"]{transition-delay:.35s}
+@media (prefers-reduced-motion:reduce){[data-load]{opacity:1 !important; transform:none !important}}
+
+/* ===== Responsive ===== */
+@media(max-width:1040px){
+  .hero-inner{grid-template-columns:1fr; gap:26px}
+  .featured{order:2}
+}
+@media(max-width:900px){
+  .hero-stats-inner{grid-template-columns:repeat(2,1fr); gap:14px 0}
+  .hstat:nth-child(3)::before{display:none}
+  .how-arrow{display:none}
+  .how-step{min-width:100%}
+}
+@media(max-width:560px){
+  .hero-stats-inner{grid-template-columns:1fr}
+  .hstat+.hstat::before{display:none}
+  .topbar{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<!-- HERO (with topbar over it) -->
+<header class="hero" id="top">
+  <div class="topbar" data-load="1">
+    <div class="brand"><span class="logo">⚡</span> COPY · PASTE · GO</div>
+    <div class="topbar-spacer"></div>
+    <button class="navpill" onclick="goLibrary()"><span class="np-ic">▦</span> Tools</button>
+    <button class="navpill" onclick="goBrowse()"><span class="np-ic">🗂</span> Categories</button>
+    <button class="navpill navpill-ins" onclick="goInsurance()"><span class="np-ic">🏛</span> Insurance</button>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-eyebrow" data-load="1"><span class="he-ic">✦</span> Built for go-to-market teams</div>
+      <h1 data-load="2">Pick a prompt. <em>Get to work!</em></h1>
+      <p class="sub" data-load="3">A curated, copy-paste prompt library for the tools that run your week — Outlook, Teams, MSX, MSXi, Lynx, and Seismic. Search by workflow, copy the prompt, and ship usable output on the first run.</p>
+      <div class="hero-search" data-load="4">
+        <span class="si"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2.1"/><line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></span>
+        <input id="heroSearch" type="text" placeholder="Search by workflow — e.g. &quot;pipeline hygiene&quot;, &quot;summarize thread&quot;, &quot;ACR prep&quot;…" autocomplete="off" />
+        <button class="go-btn" onclick="heroGo()" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="hero-chips" id="heroChips" data-load="5"></div>
+    </div>
+    <aside class="featured" id="featuredCard" data-load="4"></aside>
+  </div>
+  <div class="hero-stats" id="heroStats" data-load="6"></div>
+</header>
+
+<!-- HOW IT WORKS + BROWSE -->
+<section class="lightsec" id="how">
+  <div class="lightwrap">
+    <h2 class="sec-title">How it works</h2>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-ic"><span class="how-num">1</span>🪄</div>
+        <div class="how-tx"><h3>Pick the workflow</h3><p>Filter by tool or job category to find the prompt you need.</p></div>
+      </div>
+      <div class="how-arrow">→</div>
+      <div class="how-step">
+        <div class="how-ic"><span class="how-num">2</span>📋</div>
+        <div class="how-tx"><h3>Copy the prompt</h3><p>Each card has the full prompt. Swap the <b>[bracketed]</b> fields for your context.</p></div>
+      </div>
+      <div class="how-arrow">→</div>
+      <div class="how-step">
+        <div class="how-ic"><span class="how-num">3</span>🚀</div>
+        <div class="how-tx"><h3>Ship the output</h3><p>Paste into your agent. It brings your data and paths and ships real output.</p></div>
+      </div>
+    </div>
+    <div class="browse" id="browse">
+      <h2 class="sec-title">Browse by job category</h2>
+      <div class="browse-pills" id="browsePills"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTROLS + LIBRARY -->
+<main class="wrap" id="library">
+  <div class="controls">
+    <div class="rolechips" id="roleChips"></div>
+    <div class="chips" id="toolChips"></div>
+    <div class="toolrow">
+      <div class="field"><span class="fi">🔎</span><input id="search" type="text" placeholder="Filter the library…" autocomplete="off" /></div>
+      <div class="field">
+        <select id="catSelect"><option value="">All categories</option></select>
+      </div>
+      <div class="field">
+        <select id="sortSelect">
+          <option value="default">Sort: Featured</option>
+          <option value="az">Sort: A → Z</option>
+          <option value="tool">Sort: By tool</option>
+          <option value="pop">Sort: Most copied</option>
+        </select>
+      </div>
+      <button class="btn" id="favBtn" onclick="toggleFavView()">☆ Favorites</button>
+      <button class="btn" id="groupBtn" onclick="toggleGroup()">▦ Grouped</button>
+      <div class="spacer"></div>
+      <button class="btn" id="moreBtn" onclick="toggleMore()" aria-expanded="false">⋯ More tools</button>
+      <button class="btn" onclick="clearAll()">Clear</button>
+    </div>
+    <div class="morepanel" id="morePanel">
+      <div class="moreinner">
+      <div class="moregroup">
+        <span class="morelbl">Tailor</span>
+        <div class="field"><select id="industrySelect" title="Tailor every prompt to an industry"></select></div>
+        <div class="field"><select id="agentSelect" title="Where the Open button sends you"></select></div>
+      </div>
+      <div class="moregroup">
+        <span class="morelbl">Sections</span>
+        <button class="btn" id="expandAllBtn" onclick="expandAllCats()" title="Expand all sections">⊞ Expand all</button>
+        <button class="btn" id="collapseAllBtn" onclick="collapseAllCats()" title="Collapse all sections">⊟ Collapse all</button>
+      </div>
+      <div class="moregroup">
+        <span class="morelbl">Prompts</span>
+        <button class="btn" onclick="surprise()">🎲 Surprise me</button>
+        <button class="btn" onclick="copyAllVisible()">⧉ Copy all</button>
+        <button class="btn" onclick="exportFavorites()">⬇ Export</button>
+        <button class="btn" onclick="document.getElementById('importFile').click()">⬆ Import</button>
+        <input type="file" id="importFile" accept=".md,.markdown,.txt,.json" style="display:none" onchange="importFavorites(event)" />
+        <button class="btn" onclick="printPDF()">🖨 PDF</button>
+      </div>
+      <div class="launchrail" id="launchRail"></div>
+      </div>
+    </div>
+    <div class="resultline" id="resultLine"></div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- INSURANCE (FSI) CUSTOMER USE CASES — separate, for GA -->
+<section class="lightsec insurance-sec" id="insurance">
+  <div class="lightwrap">
+    <div class="ins-head">
+      <div>
+        <div class="ins-eyebrow"><span>🏛</span> Insurance · FSI · Customer-facing</div>
+        <h2 class="sec-title" style="margin-bottom:8px">Insurance customer use cases</h2>
+        <p class="ins-sub">A separate set of customer-facing AI use cases mapped across the insurance value chain — underwriting, claims, policy servicing, distribution, actuarial, compliance, and reinsurance. Built to demo and hand to carriers when the product reaches GA. Kept distinct from the internal field library above, and fully anonymized — no customer or carrier names, ever.</p>
+      </div>
+      <span class="ga-badge">⏳ Available at GA</span>
+    </div>
+    <div class="ins-chips" id="insChips"></div>
+    <div class="grid" id="insGrid"></div>
+  </div>
+</section>
+
+<button class="iconbtn totop" id="toTop" title="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<footer>
+  <div class="foot-inner">
+    <div>Field Prompt Library · Built for sellers, by the field. Prompts are anonymized — no submitter names, ever.</div>
+    <div id="footStats"></div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================ THEME ============================ */
+(()=>{const p=new URLSearchParams(location.search).get("clawpilotTheme");
+  const saved=localStorage.getItem("fpl-theme");
+  const t=p||saved||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+  document.documentElement.setAttribute("data-theme",t);})();
+function toggleTheme(){const h=document.documentElement;const n=h.getAttribute("data-theme")==="dark"?"light":"dark";h.setAttribute("data-theme",n);localStorage.setItem("fpl-theme",n);syncThemeBtn();}
+function syncThemeBtn(){const d=document.documentElement.getAttribute("data-theme")==="dark";const b=document.getElementById("themeBtn"); if(b)b.textContent=d?"☀️":"🌙";}
+
+/* ============================ TOOL META ============================ */
+const TOOLS={
+  Outlook:{c:"#0072C6", blurb:"Email", url:"https://outlook.office.com/mail/"},
+  Teams:{c:"#6264A7", blurb:"Chat & meetings", url:"https://teams.microsoft.com/"},
+  MSX:{c:"#C24A1D", blurb:"CRM / Dynamics", url:"https://msx.microsoft.com/"},
+  MSXi:{c:"#107C10", blurb:"Insights & revenue", url:"https://msxi.microsoft.com/"},
+  Lynx:{c:"#B146C2", blurb:"Forecasting", url:"https://aka.ms/lynx"},
+  Seismic:{c:"#E5A000", blurb:"Content & enablement", url:"https://microsoft.seismic.com/"}
+};
+
+/* ============================ PROMPTS ============================ */
+/* Each: {tool, cat, title, desc, tags[], prompt} — no author names, ever. */
+const PROMPTS=[
+/* ---------------- OUTLOOK ---------------- */
+{tool:"Outlook",cat:"Inbox Triage",title:"Morning Inbox Triage Board",desc:"Sort every unread email into Reply-now / Reply-today / FYI / Ignore with a one-line reason and suggested next action.",tags:["triage","daily","prioritize"],feat:1,
+prompt:`Scan my Outlook inbox for all unread and flagged mail received in the last [24 hours]. Group every message into four buckets — REPLY NOW (customer/manager waiting), REPLY TODAY, FYI (read-only), and IGNORE/ARCHIVE. For each item give: sender, subject, a one-line reason for its bucket, and a suggested next action. Output a clean table sorted by urgency. Do not draft replies yet and do not mark anything read.`},
+
+{tool:"Outlook",cat:"Drafting",title:"Customer Reply Drafter",desc:"Draft an on-tone reply to a specific thread that answers every open question and proposes clear next steps.",tags:["draft","customer","reply"],
+prompt:`Open the email thread "[subject or sender]". Summarize what the customer is actually asking, then draft a reply in a [warm but concise] tone that (1) answers every open question, (2) confirms any commitments with realistic dates, and (3) proposes one clear next step. Keep it under [150 words]. Show me the draft for review — do NOT send.`},
+
+{tool:"Outlook",cat:"Summarize",title:"Long Thread Summarizer",desc:"Collapse a sprawling email chain into decisions made, open questions, and who owes what.",tags:["summary","thread"],feat:1,
+prompt:`Summarize the email thread "[subject]" from oldest to newest. Produce three sections: DECISIONS MADE, OPEN QUESTIONS, and ACTION ITEMS (with owner and any stated due date). Flag any contradiction or unanswered customer question in bold. Keep the whole summary under [200 words].`},
+
+{tool:"Outlook",cat:"Follow-ups",title:"Needs-a-Reply Sweep",desc:"Find threads where someone is waiting on you and you haven't responded — ranked by how overdue they are.",tags:["follow-up","overdue"],
+prompt:`Scan my inbox and sent items for the last [14 days]. Find threads where another person asked me something or is waiting on me and I have NOT replied since. Return a prioritized table: contact, subject, what they need, days waiting, and a suggested one-line next action. Exclude newsletters, automated alerts, and pure-FYI mail.`},
+
+{tool:"Outlook",cat:"Follow-ups",title:"No-Response Nudge",desc:"Draft a polite follow-up for emails you sent that never got a reply.",tags:["nudge","draft"],
+prompt:`Find emails I SENT in the last [10 days] that received no reply and were addressed to an external customer. For each, draft a short, friendly follow-up that re-states the ask in one line and makes it easy to respond. Present them as drafts grouped by recipient — do not send anything.`},
+
+{tool:"Outlook",cat:"Action Items",title:"Commitments I Made",desc:"Extract every promise you made across sent mail so nothing slips.",tags:["commitments","accountability"],
+prompt:`Read my Sent Items from the last [7 days]. Extract every commitment or promise I made ("I'll send…", "I'll follow up…", "we'll have it by…"). Return a checklist with: what I promised, to whom, the implied or stated due date, and current status if you can infer it. Sort by due date, soonest first.`},
+
+{tool:"Outlook",cat:"Meetings",title:"Meeting Recap Email",desc:"Turn rough notes into a polished recap email with decisions and owners.",tags:["recap","meeting","draft"],
+prompt:`Here are my rough notes from a meeting with [customer/team]: [paste notes]. Turn them into a professional recap email with sections for Summary, Decisions, Action Items (owner + date), and Next Meeting. Match a [concise, executive] tone. Output as a ready-to-review draft addressed to [attendees] — do not send.`},
+
+{tool:"Outlook",cat:"Drafting",title:"Stakeholder Intro Email",desc:"Write a warm introduction email to a new contact you've never met.",tags:["intro","draft","relationship"],
+prompt:`Draft a first-touch introduction email to [name, role at customer]. I am their [my role] and want to open a relationship around [topic/initiative]. Keep it human and specific — reference [context], propose a 25-minute intro call, and offer two time windows next week. Under 120 words. Draft only.`},
+
+{tool:"Outlook",cat:"Inbox Triage",title:"Subscription & Noise Audit",desc:"Find the newsletters and alerts cluttering your inbox and stage safe unsubscribes.",tags:["cleanup","unsubscribe"],
+prompt:`Audit my inbox from the last [30 days] for recurring newsletters, marketing, and automated alerts. Group by sender, count messages, and estimate how many I actually opened. Recommend KEEP / MUTE / UNSUBSCRIBE for each and stage the unsubscribe actions for my approval. Never unsubscribe me from anything automatically.`},
+
+{tool:"Outlook",cat:"Drafting",title:"Tone & Length Rewriter",desc:"Rewrite a draft to be more concise, more senior, or more empathetic.",tags:["rewrite","tone"],
+prompt:`Rewrite the following email draft to be [more concise / more executive / warmer / firmer]: [paste draft]. Preserve every fact and commitment. Give me two versions — one tightened to ~80 words and one fuller version — and flag anything that could be misread by the recipient.`},
+
+{tool:"Outlook",cat:"Search",title:"Find the Attachment",desc:"Locate a document buried in email by describing it instead of remembering the subject.",tags:["search","attachment"],
+prompt:`Search my mailbox for an attachment matching this description: "[what it was about / file type / rough timeframe / sender]". Return the most likely matches with sender, date, subject, and file name so I can open the right one. Show up to [5] candidates ranked by likelihood.`},
+
+{tool:"Outlook",cat:"Daily Brief",title:"End-of-Day Inbox Digest",desc:"A single self-summary of what landed today and what's still open going into tomorrow.",tags:["digest","daily"],
+prompt:`Build my end-of-day inbox digest. Cover mail received today: what got resolved, what's still waiting on me, and the top [3] things I should handle first tomorrow morning. Keep it to a short scannable brief. Flag anything from a customer or my manager at the top.`},
+
+/* ---------------- TEAMS ---------------- */
+{tool:"Teams",cat:"Catch Up",title:"Unread Mentions Catch-Up",desc:"Summarize every @mention and DM you missed, grouped by what needs a reply.",tags:["catch-up","mentions"],feat:1,
+prompt:`Catch me up on Teams. Pull all @mentions and direct messages I haven't read from the last [2 days]. Group them into NEEDS A REPLY, DECISION NEEDED, and FYI. For each, give the sender, the chat/channel, a one-line summary, and a suggested next action. Don't draft replies yet.`},
+
+{tool:"Teams",cat:"Summarize",title:"Channel 7-Day Digest",desc:"Distill a busy channel into the decisions, asks, and useful links from the past week.",tags:["channel","digest"],feat:1,
+prompt:`Summarize the [channel name] Teams channel for the last [7 days]. Output: KEY DECISIONS, OPEN ASKS (with who's waiting), USEFUL LINKS/FILES shared, and any item that mentions [my accounts/keyword]. Drop the chatter. Keep it under [200 words] and link back to the source messages where possible.`},
+
+{tool:"Teams",cat:"Action Items",title:"Thread → Action Items",desc:"Convert a long Teams thread into owned, dated next steps.",tags:["actions","thread"],
+prompt:`Read the Teams thread I'm pointing you to: [chat/link/topic]. Extract all action items as a checklist with owner and due date where stated. Separately list any DECISION reached and any QUESTION still open. Flag items assigned to me at the top.`},
+
+{tool:"Teams",cat:"Drafting",title:"Status Update Post",desc:"Draft a crisp status update to post in a team channel from your week's signals.",tags:["status","draft"],
+prompt:`Draft a weekly status update to post in [channel]. Base it on my recent work around [accounts/initiatives]. Structure: 3 wins, 2 in-progress, 1 blocker/ask. Keep it skimmable with short bullets and bold leads. Show me the draft to approve before anything is posted.`},
+
+{tool:"Teams",cat:"Meetings",title:"Pre-Call Prep Brief",desc:"A one-screen brief before a Teams call: who's attending, recent context, and three talking points.",tags:["prep","meeting"],feat:1,
+prompt:`I have a Teams meeting titled "[meeting]" at [time]. Build me a one-screen prep brief: who's attending and their roles, the most recent relevant email/chat context with each attendee, any open commitments between us, and three talking points plus one smart question to ask. Keep it tight.`},
+
+{tool:"Teams",cat:"Meetings",title:"Teams Meeting Follow-up",desc:"Turn a meeting's chat and notes into a recap message plus next steps.",tags:["follow-up","recap"],
+prompt:`From the Teams meeting "[meeting]" — its chat, notes, and any transcript — produce a recap I can post back to the group: Summary, Decisions, Action Items (owner + date), and Next Steps. Then draft a separate short DM to [person] about the item they own. Drafts only; don't post or send.`},
+
+{tool:"Teams",cat:"Catch Up",title:"What Did [Person] Say?",desc:"Recap a specific colleague's recent messages across your chats.",tags:["recap","person"],
+prompt:`Recap everything [name] has messaged me (DMs and shared channels) in the last [5 days]. Summarize the key points, anything they asked of me, and any commitment they made to me. Note which items are still unresolved.`},
+
+{tool:"Teams",cat:"Alerts",title:"Single Self-Alert Setup",desc:"A notification-only check that pings you once when something specific happens — silent otherwise.",tags:["automation","alert"],
+prompt:`Set up a notification-only check: monitor [channel/keyword/condition, e.g. "my name mentioned in the Lobster Pound"] and once per [day] send ME a single consolidated Teams self-message summarizing anything new. If nothing qualifies, stay silent. Never message anyone but me, and never take action on the content.`},
+
+{tool:"Teams",cat:"Search",title:"Find the File in Chat",desc:"Locate a file someone shared in a Teams chat by describing it.",tags:["search","file"],
+prompt:`Search my Teams chats and channels for a file matching: "[description / type / who shared it / rough date]". Return the best matches with who shared it, which chat, the date, and the file name. Up to [5] candidates ranked by likelihood.`},
+
+{tool:"Teams",cat:"Drafting",title:"@Mention Message Composer",desc:"Draft a clear Teams message that @mentions the right people and states the ask up front.",tags:["draft","mention"],
+prompt:`Draft a Teams message to [person/group] about [topic]. Lead with the ask in the first sentence, give just enough context, and @mention whoever needs to act. Keep it under [60 words] and friendly. Show me the draft and tell me which chat you'd send it to — I'll confirm before it goes.`},
+
+/* ---------------- MSX ---------------- */
+{tool:"MSX",cat:"Pipeline Hygiene",title:"Stale Opportunity Audit",desc:"Find open opps with no recent activity, missing close plans, or past-due close dates — with fix suggestions.",tags:["hygiene","pipeline"],feat:1,
+prompt:`Audit my open MSX opportunities. Flag every opp that is stale: no activity in [30+ days], a close date in the past, missing next step, or stuck in the same stage for [60+ days]. Return a table: opportunity, account, amount, stage, close date, what's wrong, and the single best corrective action. Sort by amount, largest first. Read-only — don't write anything to MSX yet.`},
+
+{tool:"MSX",cat:"Account View",title:"Account Opportunity Summary",desc:"A clean rollup of all open opportunities for one account with stage, value, and risk.",tags:["account","summary"],feat:1,
+prompt:`Summarize all open MSX opportunities for the account "[account name]". For each: opportunity name, solution area, amount, stage, close date, next step, and a quick risk read (green/yellow/red) with a one-line reason. Total the weighted and unweighted pipeline at the bottom.`},
+
+{tool:"MSX",cat:"Milestones",title:"Milestone Builder",desc:"Draft reasonable engagement milestones for an opportunity, grounded in its real context.",tags:["milestones","draft"],
+prompt:`For MSX opportunity "[opp name]" on account "[account]", review the opportunity context and any connected chat, then propose a sensible set of engagement milestones with titles, target dates, and owners that move it toward close. Show existing milestones first so we don't duplicate. Present everything for my approval — write nothing to MSX until I confirm.`},
+
+{tool:"MSX",cat:"Forecasting",title:"Forecast Comment Drafter",desc:"Write a consistent, on-format MSX forecast comment for each open opportunity.",tags:["forecast","comment"],feat:1,
+prompt:`For each of my [Commit/Upside] MSX opportunities closing this quarter, draft a forecast comment in this format: [current status] · [next step + date] · [risk] · [confidence]. Keep each under [40 words] and grounded in the latest activity. Output a table mapping opportunity → comment. Drafts only.`},
+
+{tool:"MSX",cat:"Account View",title:"Account Team & Stakeholder Map",desc:"Map the internal v-team and customer stakeholders for an account, with gaps highlighted.",tags:["stakeholders","mapping"],
+prompt:`Build a stakeholder map for account "[account]". List the internal Microsoft v-team (role + name) and known customer contacts (role + influence). Highlight gaps: missing roles on our side, and any customer CXO with no documented relationship. Suggest who should own closing each gap. Read-only.`},
+
+{tool:"MSX",cat:"Leads",title:"Lead Triage & Routing",desc:"Prioritize new MSX leads and draft intro outreach for the ones worth pursuing.",tags:["leads","triage"],
+prompt:`Triage my new/unworked MSX leads. Score each on fit and urgency using [company size, solution interest, recency]. Return a ranked table with a recommended disposition (pursue / nurture / disqualify) and a one-line reason. For the top [5] "pursue" leads, draft a short intro email. Don't change lead status or send anything without my OK.`},
+
+{tool:"MSX",cat:"Next Best Action",title:"Next Best Action Queue",desc:"For your top opps, the single highest-leverage move to make this week.",tags:["nba","priority"],
+prompt:`Look across my open MSX opportunities and give me a Next-Best-Action queue for this week. For each of my top [8] opps by weighted value, state the ONE action most likely to advance it, why, and the ideal timing. Order the queue so I work the highest-leverage move first.`},
+
+{tool:"MSX",cat:"Close Plans",title:"Close Plan Generator",desc:"Draft a milestone-based close plan for a specific opportunity working backward from the close date.",tags:["close-plan","strategy"],
+prompt:`Build a close plan for MSX opportunity "[opp]" (close date [date], amount [amount]). Working backward from the close date, lay out the steps, owners, and dates needed to win — technical validation, business case, procurement, exec sponsor. Flag the biggest risk to the timeline. Output as a table I can adapt; don't write to MSX.`},
+
+{tool:"MSX",cat:"Activities",title:"Log High-Value Activity",desc:"Stage an MSX activity/HVA from calendar or email evidence, preview before any write.",tags:["HVA","logging"],
+prompt:`I met with [customer] about [topic] on [date]. Find the matching MSX account and the best-fit open opportunity, then draft the High-Value Activity / completed-task entry that should be logged (type, subject, related opp, notes). Show me the full entry to confirm — write to MSX only after I approve.`},
+
+{tool:"MSX",cat:"Whitespace",title:"Account Whitespace Scan",desc:"Spot solution areas the customer hasn't bought yet versus their peers.",tags:["whitespace","expansion"],
+prompt:`For account "[account]", compare what they currently own/consume in MSX against the full Microsoft solution map. Identify the biggest whitespace — solution areas with no opportunity and no consumption — and rank them by likely fit given the customer's industry and size. Suggest a lead play for the top [3].`},
+
+{tool:"MSX",cat:"Renewals",title:"Renewal Radar",desc:"List upcoming renewals and the risk signals around each.",tags:["renewals","risk"],
+prompt:`List all agreements/opportunities for my accounts renewing in the next [120 days]. For each: account, what's renewing, value, renewal date, owner, and any risk signal (declining consumption, open support issues, quiet stakeholder). Sort by renewal date and flag the top [3] at-risk renewals.`},
+
+/* ---------------- MSXi ---------------- */
+{tool:"MSXi",cat:"ACR Review",title:"Monthly ACR Review",desc:"A polished month-over-month Azure Consumed Revenue review across your territory or accounts.",tags:["ACR","dashboard"],feat:1,
+prompt:`Build a monthly Azure Consumed Revenue (ACR) review from MSXi for [territory/account portfolio]. Show headline ACR with MoM and YoY momentum, the strategic-pillar mix, top service growers and decliners, and a per-account drill-down. Call out the [3] accounts driving the swing. Output a clean summary I can paste into a review.`},
+
+{tool:"MSXi",cat:"Revenue",title:"Billed Revenue Trend",desc:"Track MSXi billed revenue by account and surface meaningful changes.",tags:["billed","trend"],feat:1,
+prompt:`Pull MSXi billed revenue for my accounts over the last [6 months]. Show the trend per account, total, and growth rate. Flag any account where billed revenue dropped more than [15%] versus its trailing average and any that newly crossed [$ threshold]. Summarize what changed in plain language.`},
+
+{tool:"MSXi",cat:"Alerts",title:"Landed Revenue Alert",desc:"Flag newly landed revenue lines and match them to open MSX opps to close.",tags:["landed","alert"],
+prompt:`Check MSXi for newly landed/billed revenue lines on my accounts above [$ threshold] since [date]. Match each to an open MSX opportunity where possible and surface a "ready to close" list with the opportunity link. If a landed line has no matching opp, flag it so I can create one. Notify me only when there's something new.`},
+
+{tool:"MSXi",cat:"Attainment",title:"Weighted Attainment Snapshot",desc:"Project FY weighted attainment from MSXi actuals plus pipeline, with assumptions stated.",tags:["attainment","quota"],feat:1,
+prompt:`From MSXi actuals plus my MSX billed pipeline, project my fiscal-year weighted attainment. State your conversion assumptions explicitly, show current attainment %, projected end-of-year %, and the gap to quota. Add a short sensitivity view: best / expected / worst case. Confirm the assumptions with me before treating any as final.`},
+
+{tool:"MSXi",cat:"Consumption",title:"Consumption Decline Detector",desc:"Catch accounts whose Azure consumption is trending down before it becomes a churn problem.",tags:["consumption","churn"],
+prompt:`Scan MSXi consumption for my accounts over the last [90 days]. Identify accounts with a sustained downward trend (not one-off dips). For each, show the slope, likely service(s) driving the decline, and a suggested intervention. Rank by revenue at risk. This is read-only — produce findings only.`},
+
+{tool:"MSXi",cat:"Service Mix",title:"Service Grow/Decline Breakdown",desc:"Break ACR change down to the service level so you know what's actually moving.",tags:["services","analysis"],
+prompt:`For [account / territory], decompose the change in ACR over [last quarter] to the Azure service level. List the top [5] growing services and top [5] declining services with the $ and % change for each. Add a one-line hypothesis for the biggest mover. Output a table plus a two-sentence takeaway.`},
+
+{tool:"MSXi",cat:"Utilization",title:"Consulting Utilization Tracker",desc:"A read-only check of YTD utilization and the daily pace needed to hit target.",tags:["utilization","ISD"],
+prompt:`From MSXi/MSX Earnings, compute my year-to-date consulting utilization and billable hours. Show YTD %, target %, the gap, and the billable hours per remaining workday I need to average to hit my fiscal-year target. Read-only; just the numbers and the pace.`},
+
+{tool:"MSXi",cat:"ACR Review",title:"Closest-to-the-Pin ACR Planner",desc:"A territory CTP planning view by quarter and account from MSXi.",tags:["CTP","planning"],
+prompt:`Build a closest-to-the-pin ACR planning view from MSXi for my territory, broken out by ATU, quarter, and account. Show committed vs. current run-rate vs. CTP target, and the gap per account. Highlight the accounts where a small push closes the biggest gap. Local/read-only output only.`},
+
+/* ---------------- LYNX ---------------- */
+{tool:"Lynx",cat:"Forecasting",title:"Territory Forecast View",desc:"Roll your Lynx forecast into a clean commit / upside / pipeline view by account.",tags:["forecast","territory"],feat:1,
+prompt:`Build a forecast roll-up from Lynx for my territory. Break it into Commit, Upside, and Pipeline by account and solution area. Show the total against quota and the coverage ratio. Flag any single account that represents more than [20%] of the commit. Output a clean table plus a two-line narrative of where the number stands.`},
+
+{tool:"Lynx",cat:"Consumption",title:"Commit vs. Actual Consumption",desc:"Compare your committed consumption numbers in Lynx against actuals and explain the gap.",tags:["consumption","variance"],feat:1,
+prompt:`In Lynx, compare committed consumption against actuals for [territory/accounts] for [this quarter]. Show the variance per account in $ and %, total the gap, and identify the [3] accounts most responsible for any shortfall or overage. Give a plain-language explanation of the biggest variance.`},
+
+{tool:"Lynx",cat:"Quota",title:"Quota-to-Go by ATU",desc:"How much is left to hit quota, broken down by ATU and time remaining.",tags:["quota","ATU"],
+prompt:`From Lynx, calculate quota-to-go for [my team / territory] broken down by ATU. Show quota, attained, remaining, and remaining as a % plus the run-rate needed for the rest of the period. Sort ATUs by largest gap. Add one sentence on whether the current pace closes the gap.`},
+
+{tool:"Lynx",cat:"Risk",title:"At-Risk Consumption Accounts",desc:"Surface accounts whose forecast is slipping or whose commit looks unsupported.",tags:["risk","at-risk"],
+prompt:`Using Lynx forecast and consumption data, list accounts where the commit looks at risk: declining run-rate, forecast revised down, or commit not supported by current actuals. For each, show the risk type, $ exposed, and a recommended save action. Rank by dollars at risk.`},
+
+{tool:"Lynx",cat:"Coverage",title:"Pipeline Coverage Analysis",desc:"Check whether you have enough pipeline to cover the gap to quota — and where it's thin.",tags:["coverage","pipeline"],
+prompt:`Analyze my Lynx pipeline coverage for [period]. Compute coverage ratio (pipeline ÷ remaining quota) overall and by solution area. Flag any solution area below [3x] coverage as thin and estimate how much net-new pipeline I need to build there. Summarize in a short table with a recommendation.`},
+
+{tool:"Lynx",cat:"Forecasting",title:"Weekly Forecast Change Narrative",desc:"Explain what moved in your forecast week-over-week in plain language.",tags:["narrative","weekly"],
+prompt:`Compare my Lynx forecast to last week's. Summarize what changed: deals added, pushed, slipped, or upgraded/downgraded in confidence, and the net $ impact on Commit and Upside. Write it as a short narrative I could paste into a forecast call, leading with the headline number and the single biggest driver.`},
+
+{tool:"Lynx",cat:"Deep Dive",title:"Account Consumption Deep-Dive",desc:"A full consumption and forecast picture for one account ahead of a review.",tags:["account","deep-dive"],
+prompt:`Give me a Lynx deep-dive on account "[account]": current consumption run-rate, trend over [6 months], committed forecast, the gap to commit, and the workloads driving the number. End with the top [2] risks and the top [2] expansion levers. Format for an internal account review.`},
+
+{tool:"Lynx",cat:"Quality",title:"Forecast Hygiene Check",desc:"Catch forecast entries in Lynx that are stale, inconsistent, or missing required fields.",tags:["hygiene","quality"],
+prompt:`Run a hygiene check on my Lynx forecast entries. Flag any that are missing a close date or next step, haven't been updated in [14+ days], or where the stage and confidence don't match. Return a fix-it list sorted by deal size. Read-only — just tell me what to clean up.`},
+
+/* ---------------- SEISMIC ---------------- */
+{tool:"Seismic",cat:"Find Content",title:"Right Asset for the Scenario",desc:"Find the best current Seismic deck or asset for a specific customer scenario.",tags:["search","content"],feat:1,
+prompt:`Search Seismic / the AI Business Solutions Hub for the best current asset to support this scenario: "[customer + topic, e.g. retail customer evaluating Copilot]". Return the top [5] matches with title, asset type, last-updated date, and a one-line note on why it fits. Prefer the most recently updated official content and link each result.`},
+
+{tool:"Seismic",cat:"Content Pack",title:"Customer-Tailored Content Pack",desc:"Assemble a small, ordered set of Seismic assets tailored to one customer meeting.",tags:["pack","tailored"],feat:1,
+prompt:`Build a content pack from Seismic for a [meeting type] with [customer] in [industry], focused on [solution area]. Pick [4-6] assets that tell a coherent story (intro → value → proof → next step), list them in order with title, type, and why each is included, and link each. Skip anything stale or off-topic.`},
+
+{tool:"Seismic",cat:"Find Content",title:"Latest Assets for a Product",desc:"Get the freshest approved Seismic content for a specific product or solution.",tags:["latest","product"],
+prompt:`Show me the most recently updated Seismic assets for [product/solution]. Return title, type, last-updated date, and link, newest first. Flag anything older than [6 months] as potentially stale so I don't bring dated material into a customer conversation.`},
+
+{tool:"Seismic",cat:"Compare",title:"Compare Two Solutions",desc:"Build a side-by-side of two offerings using only official Seismic content.",tags:["compare","positioning"],feat:1,
+prompt:`Using only official Seismic / Business Solutions Hub content, build a side-by-side comparison of [Solution A] vs [Solution B]: what each is, who it's for, core value, and when to lead with which. Cite the source asset for each row. If the content doesn't cover a point, say so rather than inventing it.`},
+
+{tool:"Seismic",cat:"Briefings",title:"EBC / Pitch Content Assembly",desc:"Pull the right official assets to build an executive briefing agenda.",tags:["EBC","exec"],
+prompt:`I'm building an executive briefing for [customer] focused on [priorities]. From Seismic, assemble the supporting assets — narrative decks, customer proof, demos, and one-pagers — mapped to each agenda section. List them by section with title, type, and link. Only use approved content; note any gap where the catalog has nothing suitable.`},
+
+{tool:"Seismic",cat:"Playcards",title:"Industry Playcard Lookup",desc:"Find the vertical playcard and positioning for a specific industry.",tags:["industry","playcard"],
+prompt:`Find the Seismic industry playcard and positioning materials for [industry] (region: [region]). Summarize the key plays, relevant regulatory angles, and the recommended Microsoft narrative, and link the source assets. Keep the summary to a single scannable page.`},
+
+{tool:"Seismic",cat:"Competitive",title:"Competitive Battlecard Pull",desc:"Retrieve the approved battlecard against a named competitor and distill the key points.",tags:["competitive","battlecard"],
+prompt:`Pull the approved Seismic battlecard for competing against [competitor] in [solution area]. Distill it into: their pitch, our counter, top [3] differentiators, and traps to avoid. Cite the source asset and flag if the battlecard looks out of date.`},
+
+{tool:"Seismic",cat:"Follow-up",title:"Demo Follow-up Pack",desc:"Turn a demo into a follow-up kit of links, setup steps, and example prompts from Seismic.",tags:["follow-up","demo"],
+prompt:`I just ran a demo of [solution] for [customer]. Assemble a follow-up pack: the relevant Seismic assets to share, official setup/trial links, and [3] example prompts the customer can try themselves. Draft a short email that bundles it all with the links. Draft only — don't send.`},
+
+{tool:"Seismic",cat:"Quality",title:"Content Freshness Check",desc:"Audit the assets you rely on and flag what's gone stale.",tags:["freshness","audit"],
+prompt:`Here are the Seismic assets I regularly use: [list or topic]. Check each for last-updated date and whether a newer version exists. Return a table: asset, current version date, status (current / aging / replaced), and the link to the newest version if there is one.`},
+
+{tool:"Seismic",cat:"Content Pack",title:"Priorities → Content Map",desc:"Map a customer's stated priorities to the exact Seismic assets that speak to each.",tags:["mapping","priorities"],
+prompt:`Here are [customer]'s stated priorities: [list]. For each priority, find the single best Seismic asset that addresses it and explain in one line how it connects. Output a two-column map (priority → asset + link). If a priority has no good asset, flag it as a content gap.`},
+
+/* ---------------- OUTLOOK (more) ---------------- */
+{tool:"Outlook",cat:"Meetings",title:"Schedule From an Email",desc:"Pull proposed times out of a thread, check your calendar, and draft the shortest safe reply.",tags:["scheduling","calendar"],
+prompt:`Read the email thread "[subject]" and extract any proposed meeting times. Check my calendar for conflicts, then draft the shortest possible reply that either confirms a time that works or proposes [2] alternatives. Never reveal why I'm unavailable — keep reasons generic. Draft only.`},
+
+{tool:"Outlook",cat:"Action Items",title:"Email → Tasks",desc:"Turn an email into discrete to-dos with owners and due dates.",tags:["tasks","extract"],
+prompt:`Read the email "[subject]" and extract every task it implies for me. For each: a clear action title, the implied due date, and how urgent it is. Output as a checklist sorted by due date. Don't create anything yet — just show me the list.`},
+
+{tool:"Outlook",cat:"Inbox Triage",title:"VIP Sender Watch",desc:"Surface anything from your key people that you haven't actioned.",tags:["VIP","priority"],
+prompt:`Watch mail from these key people: [manager, top customers, exec sponsors]. Show me anything from them in the last [7 days] that I haven't replied to or actioned, with a one-line summary and suggested next step. Put unread items from this list at the very top of my attention.`},
+
+{tool:"Outlook",cat:"Drafting",title:"Delegation / OOO Handoff",desc:"Draft an out-of-office plan and a handoff note covering open threads.",tags:["OOO","handoff"],
+prompt:`I'm out [dates]. Scan my open threads and build a handoff note: what's in flight, who's covering each item, and what can wait. Then draft an out-of-office auto-reply that points senders to [coverage contact] for urgent items. Drafts only.`},
+
+{tool:"Outlook",cat:"Summarize",title:"Customer Sentiment Read",desc:"Gauge how a customer is feeling across recent emails before your next touch.",tags:["sentiment","customer"],
+prompt:`Read my recent email exchanges with [customer] over the last [30 days]. Give me a sentiment read: are they engaged, frustrated, going quiet? Quote the [2-3] lines that signal it, and recommend the tone and next move for my next outreach.`},
+
+{tool:"Outlook",cat:"Search",title:"Reconstruct the Decision",desc:"Trace how a decision was reached across scattered emails.",tags:["search","audit"],
+prompt:`Search my mailbox for everything related to "[decision/topic]". Reconstruct the timeline of how the decision was made: who proposed what, what changed, and the final outcome. Cite the key emails by date and sender so I can verify.`},
+
+/* ---------------- TEAMS (more) ---------------- */
+{tool:"Teams",cat:"Action Items",title:"Channel Decision Log",desc:"Maintain a running log of decisions made in a channel.",tags:["decisions","log"],
+prompt:`Scan [channel] for the last [14 days] and build a decision log: each decision, who made it, the date, and the message it came from. Separate firmly-decided items from things still under debate. Output a clean table I can keep updating.`},
+
+{tool:"Teams",cat:"Meetings",title:"Transcript Q&A",desc:"Ask questions against a meeting transcript to find what was said.",tags:["transcript","meeting"],
+prompt:`Using the transcript from the Teams meeting "[meeting]", answer: [my question, e.g. "what did the customer say about timeline and budget?"]. Quote the exact lines and who said them. If it wasn't discussed, say so plainly rather than guessing.`},
+
+{tool:"Teams",cat:"Drafting",title:"Escalation Message",desc:"Draft a calm, fact-based escalation to the right person.",tags:["escalation","draft"],
+prompt:`Help me escalate [issue] cleanly. Draft a Teams message to [person/group] that states the problem, the business impact, what's already been tried, and the specific decision or help I need — no blame, no drama. Keep it under [80 words]. Show me the draft and which chat it'd go to before sending.`},
+
+{tool:"Teams",cat:"Catch Up",title:"All-Hands / Town Hall Recap",desc:"Summarize a big channel post or town hall thread into what matters to you.",tags:["recap","all-hands"],
+prompt:`Summarize the [town hall / leadership] post and its replies in [channel]. Pull out: the [3] headline messages, anything that affects my accounts or role, and any explicit call to action with a deadline. Keep it to a short brief.`},
+
+{tool:"Teams",cat:"Summarize",title:"Consensus / Poll Reader",desc:"Read a discussion thread and summarize where the group actually landed.",tags:["consensus","poll"],
+prompt:`Read the discussion in [chat/thread] about [topic]. Summarize where the group landed: the options considered, who favored what, and the apparent consensus (or lack of one). Flag the open question that still needs a decision-maker.`},
+
+/* ---------------- MSX (more) ---------------- */
+{tool:"MSX",cat:"Pipeline Hygiene",title:"Coverage by Stage",desc:"See how your pipeline is distributed across stages and where it's thin.",tags:["coverage","stages"],
+prompt:`Break my open MSX pipeline down by sales stage. Show count and $ in each stage, the average age in stage, and the conversion gap between stages. Flag stages that look starved or clogged, and tell me where I most need to add or unstick deals.`},
+
+{tool:"MSX",cat:"Data Quality",title:"Contact Role Completeness",desc:"Check that key buying roles are filled in on your top opportunities.",tags:["contacts","MEDDIC"],
+prompt:`For my top [10] open MSX opportunities, check whether the key buying roles are documented: economic buyer, champion, technical evaluator, and decision-maker. Return a table showing which roles are missing per opp and suggest who internally could help identify them. Read-only.`},
+
+{tool:"MSX",cat:"Qualification",title:"MEDDIC Gap Check",desc:"Score an opportunity against MEDDIC and surface what's missing.",tags:["MEDDIC","qualify"],
+prompt:`Assess MSX opportunity "[opp]" against MEDDIC (Metrics, Economic buyer, Decision criteria, Decision process, Identify pain, Champion). For each element, state what's known, what's missing, and the one question I should answer next to close the gap. End with an overall qualification read.`},
+
+{tool:"MSX",cat:"Opportunities",title:"Create Opp From Signal",desc:"Stage a new opportunity from a customer signal, ready for your review.",tags:["create","opportunity"],
+prompt:`Based on this signal — [email/meeting/consumption signal] — draft the MSX opportunity I should create: name, account, solution area, estimated value, stage, and close date, plus a one-line justification. Show the full record for my approval; create it in MSX only after I confirm.`},
+
+{tool:"MSX",cat:"Win/Loss",title:"Win/Loss Pattern Scan",desc:"Learn from your recently closed opps to sharpen the open ones.",tags:["win-loss","insights"],
+prompt:`Look at my MSX opportunities closed (won and lost) in the last [2 quarters]. What patterns separate the wins from the losses — solution area, deal size, sales cycle, competitor present, champion strength? Summarize the top [3] lessons and which of my open opps share the loss patterns.`},
+
+{tool:"MSX",cat:"Account View",title:"Quarterly Account Review Pack",desc:"Assemble a one-page QBR-style summary for a single account from MSX.",tags:["QBR","account"],
+prompt:`Build a one-page account review for "[account]" from MSX: relationship summary, open pipeline (value + key opps), wins this period, risks, and the top [3] plays for next quarter. Format it cleanly so I can drop it into a review. Read-only.`},
+
+/* ---------------- MSXi (more) ---------------- */
+{tool:"MSXi",cat:"Ranking",title:"Top Accounts by Growth",desc:"Rank your accounts by ACR growth to focus where momentum is.",tags:["ranking","growth"],
+prompt:`From MSXi, rank my accounts by ACR growth over [the last quarter] — both $ and %. Show the top [10] growers and the bottom [5] decliners in one view, with the headline service driving each. Add a one-line takeaway on where my time is best spent.`},
+
+{tool:"MSXi",cat:"Adoption",title:"New Workload Adoption",desc:"Spot accounts that just started consuming a new service worth nurturing.",tags:["adoption","expansion"],
+prompt:`Scan MSXi for my accounts that began consuming a NEW Azure service in the last [60 days]. List the account, the new service, the run-rate, and whether there's a matching MSX opportunity. Flag the ones with no opp as expansion plays to pursue.`},
+
+{tool:"MSXi",cat:"Executive",title:"Executive ACR One-Pager",desc:"A clean exec-ready ACR summary for a leadership review.",tags:["exec","one-pager"],
+prompt:`Build an executive one-pager from MSXi for [territory/portfolio]: total ACR with QoQ and YoY, the [3] biggest movers (up and down) with a one-line why, strategic-pillar mix, and the single most important call-to-action. Keep it to one screen, leadership-ready.`},
+
+{tool:"MSXi",cat:"Forecasting",title:"Consumption vs. Plan",desc:"Compare actual consumption against plan and explain the variance.",tags:["plan","variance"],
+prompt:`Compare actual MSXi consumption against plan/target for [accounts] for [period]. Show actual vs plan, the $ and % variance, and the [3] accounts most responsible for the gap. Explain the largest variance in one or two plain sentences.`},
+
+{tool:"MSXi",cat:"Cross-sell",title:"Cross-Sell Signal Finder",desc:"Find consumption patterns that hint at a logical next-product play.",tags:["cross-sell","signal"],
+prompt:`Analyze MSXi consumption for [account]. Based on what they already use heavily, identify the [2-3] logical next Azure services they don't yet consume meaningfully, and explain the usage signal behind each recommendation. Frame it as a cross-sell hypothesis for me to validate.`},
+
+/* ---------------- LYNX (more) ---------------- */
+{tool:"Lynx",cat:"Scenario",title:"What-If Scenario Model",desc:"Model how your number moves if specific deals land or slip.",tags:["what-if","model"],
+prompt:`In Lynx, model a what-if: if [deal A] lands and [deal B] slips a quarter, what happens to my Commit, Upside, and quota attainment? Show the before/after numbers and the net delta. Keep assumptions explicit so I can adjust them.`},
+
+{tool:"Lynx",cat:"Quality",title:"Linearity Check",desc:"See whether your quarter is back-loaded and at risk.",tags:["linearity","pacing"],
+prompt:`Check the linearity of my Lynx forecast for [this quarter]. How much of the number is expected to land in the final [2 weeks]? Flag if I'm dangerously back-loaded and list the late-closing deals that create the risk. Suggest which to try to pull forward.`},
+
+{tool:"Lynx",cat:"Reporting",title:"Slippage Report",desc:"List deals that have moved their close date and how often.",tags:["slippage","report"],
+prompt:`From Lynx, list every opportunity whose close date has slipped in the last [60 days]. Show the deal, original vs current close date, number of times it's slipped, and value. Sort by most-slipped. Flag any that have slipped [2+] times as high-risk.`},
+
+{tool:"Lynx",cat:"Confidence",title:"Commit Confidence Scoring",desc:"Pressure-test each Commit deal and score how solid it really is.",tags:["confidence","commit"],
+prompt:`For each deal in my Lynx Commit, score confidence (High/Med/Low) based on stage, recent activity, champion strength, and how many times it's slipped. Justify each score in one line and total the $ in each confidence band. Tell me which Commit deals I should be most worried about.`},
+
+{tool:"Lynx",cat:"Reporting",title:"Manager Roll-Up Summary",desc:"A team-level forecast roll-up ready to bring to a manager review.",tags:["roll-up","manager"],
+prompt:`Build a manager-ready roll-up from Lynx for [my team]: total Commit/Upside vs quota, coverage ratio, week-over-week change, the [3] biggest deals carrying the number, and the top [3] risks. Write a short narrative I can read out in a forecast call.`},
+
+/* ---------------- SEISMIC (more) ---------------- */
+{tool:"Seismic",cat:"Enablement",title:"New-Hire Ramp Path",desc:"Assemble an ordered learning path of assets for a specific role.",tags:["ramp","enablement"],
+prompt:`From Seismic, build an ordered ramp path for a new [role] focused on [solution area]: foundational content first, then positioning, then customer-facing assets. List [8-10] items in sequence with title, type, and why it's at that step. Link each and skip anything stale.`},
+
+{tool:"Seismic",cat:"Competitive",title:"Objection Handling Pack",desc:"Pull official responses to the objections you keep hearing.",tags:["objections","competitive"],
+prompt:`I keep hearing these objections from [customer/segment]: [list]. From official Seismic content, find the approved response or proof point for each and distill it into a one-line rebuttal plus the source asset link. Flag any objection the content doesn't address.`},
+
+{tool:"Seismic",cat:"Proof",title:"Reference Customer Finder",desc:"Find the most relevant customer proof for a specific situation.",tags:["references","proof"],
+prompt:`Find the best customer reference / case study in Seismic for a [industry] customer evaluating [solution] with [similar challenge]. Return the top [3] with a one-line relevance note and link. Prefer same-industry, similar-size, recent stories.`},
+
+{tool:"Seismic",cat:"Briefings",title:"Event / Booth Content Kit",desc:"Assemble the right assets for an event, booth, or roadshow.",tags:["event","kit"],
+prompt:`I'm presenting at [event] on [topic] to [audience]. From Seismic, assemble a content kit: the lead narrative, [2] demos, one customer proof, and a leave-behind one-pager. List them in run order with links and a one-line speaker note for each. Approved content only.`},
+
+{tool:"Seismic",cat:"Find Content",title:"Localized Content Lookup",desc:"Find region- or language-specific versions of an asset.",tags:["localized","region"],
+prompt:`Find the [region/language] version of Seismic content for [product/topic]. Return the localized assets with title, language, last-updated date, and link. If only an English version exists, say so and point me to the most current one.`},
+
+/* ================= ROLE-BASED · INTERNAL SYSTEMS (AE · ATS · Specialist · CSAM · CSA · Manager · GM · Director · Industry Advisor · BM) ================= */
+
+/* ---- Account Executive (AE) ---- */
+{tool:"MSX",cat:"Account Planning",title:"Account Plan Builder",desc:"Generate a structured account plan from CRM data: priorities, whitespace, stakeholders, and a 3-deal play.",tags:["AE","account-plan","strategy"],feat:1,
+prompt:`Build a one-page account plan for [account] using everything in MSX. Include: the customer's stated priorities/initiatives, our current footprint and consumption by solution area, top [3] whitespace opportunities with a rationale, key stakeholders and their disposition, active and at-risk opportunities, and a recommended 90-day play with [3] concrete next steps. Flag any missing data I should fill in.`},
+
+{tool:"MSX",cat:"Account Planning",title:"Stakeholder & Org Map",desc:"Turn CRM contacts into a decision map: roles, influence, champions, gaps to cover.",tags:["AE","stakeholders","org-map"],
+prompt:`From the contacts and activities on [account] in MSX, build a stakeholder map. For each key person give role, business priority, our relationship strength ([champion / supporter / neutral / blocker / unknown]), and last meaningful engagement. Identify the economic buyer and any decision-makers we are NOT yet connected to, and recommend who to engage next and why.`},
+
+{tool:"MSX",cat:"Opportunity Management",title:"Close Plan / Mutual Action Plan",desc:"Draft a mutual action plan for an opportunity with milestones, owners, and dates to close.",tags:["AE","close-plan","MAP"],
+prompt:`For opportunity [name/ID] in MSX, draft a mutual action plan to close by [date]. Work backward from the close date with milestones (business case, technical validation, security review, procurement, signature), an owner for each (ours and the customer's), target dates, and the current blocker for each step. Output a clean table and flag the [2] biggest risks to the timeline.`},
+
+{tool:"MSX",cat:"Opportunity Management",title:"Opportunity Next-Step Generator",desc:"Review stalled opportunities and propose the single best next action for each.",tags:["AE","pipeline","next-step"],
+prompt:`Scan my open opportunities in MSX that haven't progressed a stage in [30+ days]. For each, summarize where it's stuck, the likely reason, and the single most effective next action to advance it. Sort by close date and deal size. Don't change any records — give me an action list I can work today.`},
+
+{tool:"MSX",cat:"Opportunity Management",title:"Post-Meeting Recap & CRM Update",desc:"Turn meeting notes into a clean recap plus the CRM updates that should follow.",tags:["AE","recap","activity"],
+prompt:`Here are my notes from the [customer] meeting: [paste notes]. Produce (1) a concise internal recap — decisions, open questions, risks, and next steps with owners and dates; and (2) the MSX updates this implies (stage change, next step, close date, new contacts, competitor noted). Show the updates for my review — do not assume anything I didn't say.`},
+
+{tool:"MSXi",cat:"Account Planning",title:"Whitespace & Cross-Sell Finder",desc:"Use consumption insights to surface the highest-potential unsold workloads for an account.",tags:["AE","whitespace","cross-sell"],
+prompt:`Using MSXi for [account], identify whitespace: which solution areas/workloads the customer has NOT adopted or is under-consuming versus similar customers of their size and industry. Rank the top [5] cross-sell/upsell plays by revenue potential and likelihood, with a one-line "why now" for each and the internal signal that supports it.`},
+
+{tool:"Outlook",cat:"Industry & Executive",title:"Executive Outreach Email",desc:"Draft a crisp, value-led executive email tailored to a senior customer stakeholder.",tags:["AE","exec","outreach"],
+prompt:`Draft an executive outreach email to [role] at [account]. Open with a relevant business trigger ([recent news/initiative]), connect it to one outcome we can drive, keep it under [120 words], and propose a specific 30-minute conversation with two time options. Professional, confident, no jargon or fluff. Show me the draft — do not send.`},
+
+/* ---- Account Technology Strategist (ATS) / CSA / Solution Architect ---- */
+{tool:"MSX",cat:"Technical Strategy",title:"Technical Account Plan",desc:"Build a technical account plan: current architecture, adoption blockers, and a workload roadmap.",tags:["ATS","CSA","architecture"],feat:1,
+prompt:`Build a technical account plan for [account] from MSX and any linked notes. Summarize the customer's current architecture and key workloads, adoption blockers or technical debt, security/compliance considerations, and a [4-quarter] workload adoption roadmap tied to their business priorities. List the top [3] technical proof points (POC/POV) we should drive next and what each unblocks.`},
+
+{tool:"MSXi",cat:"Technical Strategy",title:"Azure Consumption Growth Plan",desc:"Find the consumption levers for an account: usage trends, idle commitments, and growth workloads.",tags:["ATS","CSA","Azure","consumption"],
+prompt:`From MSXi for [account], analyze Azure/cloud consumption: trend over the last [12 months], top services by spend, any decline or flattening, and committed-but-unused capacity. Identify the [3] workloads most likely to grow consumption next, the technical action that unlocks each, and any churn/optimization risk I should get ahead of.`},
+
+{tool:"MSXi",cat:"Technical Strategy",title:"Workload Adoption & Usage Telemetry",desc:"Summarize adoption health for a deployed workload and pinpoint where usage stalls.",tags:["ATS","CSA","adoption","telemetry"],
+prompt:`Review adoption telemetry in MSXi for [workload] at [account]. Summarize active usage vs entitlement, the adoption trend, and where users drop off or features go unused. Recommend the top [3] adoption actions (enablement, config, exec sponsorship) and what success would look like in [60 days].`},
+
+{tool:"Teams",cat:"Technical Strategy",title:"Technical Workshop Agenda",desc:"Draft a tailored architecture/skilling workshop agenda for a customer technical team.",tags:["ATS","CSA","workshop"],
+prompt:`Draft a [half-day] technical workshop agenda for [account]'s [platform/security/data] team focused on [topic/workload]. Include objectives, a timed agenda, hands-on segments, the architecture decisions to validate, required prep/prerequisites, and the success criteria. Keep it outcome-driven and realistic for the time.`},
+
+/* ---- Solution Specialist / Solution-Area Specialist ---- */
+{tool:"MSX",cat:"Solution Plays",title:"Solution Play Qualification",desc:"Qualify an opportunity against a solution play with MEDDPICC-style gaps.",tags:["specialist","qualify","MEDDPICC"],feat:1,
+prompt:`Qualify opportunity [name] for the [solution area] play using MSX data. Assess Metrics, Economic buyer, Decision criteria, Decision process, Paper process, Identified pain, Champion, and Competition — mark each as Known / Partial / Unknown with the evidence. Give an overall qualification verdict, the top [3] gaps to close, and the next action for each gap.`},
+
+{tool:"Seismic",cat:"Solution Plays",title:"Competitive Battlecard Prep",desc:"Assemble a customer-specific battlecard vs a named competitor for a deal.",tags:["specialist","competitive","battlecard"],
+prompt:`Build a battlecard for [solution area] at [account] where we're competing against [competitor]. Pull our strongest differentiators and proof points from Seismic, anticipate the [3] objections the customer will raise, give a crisp response to each, and list the traps to set and landmines to avoid. Keep it to one page I can use live.`},
+
+{tool:"Seismic",cat:"Solution Plays",title:"Tailored Demo Script",desc:"Generate a demo flow mapped to the customer's specific pains and personas.",tags:["specialist","demo","script"],
+prompt:`Create a [30-minute] demo script for [solution/product] tailored to [account]'s [pains/use cases] and the personas in the room ([roles]). For each segment give the scenario, what to show, the value message, and the "so what" for that persona. Pull supporting assets from Seismic. End with a clear call to action.`},
+
+{tool:"Seismic",cat:"Solution Plays",title:"Objection Handling Sheet",desc:"Prep concise, proof-backed responses to the objections likely in a specific deal.",tags:["specialist","objections"],
+prompt:`For [solution area] at [account], list the [6] objections most likely to come up (price, security, migration risk, competitor, timing, change management). For each, give a concise, confident response backed by a proof point or asset from Seismic, plus one reframing question to keep the conversation moving.`},
+
+{tool:"MSXi",cat:"Solution Plays",title:"Solution-Area Pipeline Review",desc:"Review the specialist pipeline for one solution area: coverage, gaps, and at-risk deals.",tags:["specialist","pipeline","coverage"],
+prompt:`Review my [solution area] pipeline in MSXi. Summarize total pipeline vs target by stage, coverage ratio, the deals most likely to slip, and where I'm thin on coverage for the quarter. Recommend where to focus this week and which [3] deals need specialist time most.`},
+
+/* ---- Customer Success Account Manager (CSAM) / Customer Success ---- */
+{tool:"MSX",cat:"Customer Success",title:"Customer Success Plan",desc:"Draft a success plan tied to the customer's outcomes, milestones, and consumption goals.",tags:["CSAM","success-plan","adoption"],feat:1,
+prompt:`Draft a customer success plan for [account]. Capture the customer's desired business outcomes, the workloads in scope, current adoption/consumption baseline from our systems, milestones with target dates, risks to value realization, and the engagement rhythm. Tie each milestone to a measurable outcome and name the owner. Flag anything blocking time-to-value.`},
+
+{tool:"MSXi",cat:"Customer Success",title:"Consumption Health Review",desc:"Build a health snapshot for a managed account: usage trend, risks, and renewal signals.",tags:["CSAM","health","renewal"],
+prompt:`Create a consumption health review for [account] from MSXi. Show the consumption trend, adoption by workload, any usage decline or support friction, and an overall health rating ([green/yellow/red]) with the reasons. Recommend the top [3] actions to protect and grow consumption ahead of the [renewal date].`},
+
+{tool:"Outlook",cat:"Customer Success",title:"Escalation Summary Email",desc:"Summarize an open support/technical escalation and draft a stakeholder update.",tags:["CSAM","escalation","update"],
+prompt:`Summarize the open escalation for [account] ([case/issue]): impact, timeline of what's happened, current status, and next steps with owners and ETAs. Then draft a calm, clear stakeholder update email to [customer role] that sets accurate expectations without over-promising. Mark anything that needs verification before I send.`},
+
+/* ---- Manager / GM / Director / VP ---- */
+{tool:"Lynx",cat:"Forecast & Pipeline",title:"Forecast Call Prep",desc:"Prep a manager for the forecast call: commit, upside, risk, and the deals to inspect.",tags:["manager","GM","forecast"],feat:1,
+prompt:`Prep me for this week's forecast call using Lynx and MSX. Summarize commit, best-case, and pipeline vs quota for the [team/territory], the week-over-week change, the deals driving commit, the top [5] at-risk or slipping deals, and where the number is exposed. For each at-risk deal, give the one question I should ask the seller. Keep it to a one-screen brief.`},
+
+{tool:"Lynx",cat:"Forecast & Pipeline",title:"Forecast Variance Analysis",desc:"Explain what moved the forecast since last week and why.",tags:["manager","forecast","variance"],
+prompt:`Compare this week's forecast to last week's in Lynx for [team/territory]. Explain the variance: deals added, pushed, pulled in, won, or lost, and the net effect on commit and upside. Separate real movement from data hygiene. Highlight any single deal that materially swings the number and what's needed to de-risk it.`},
+
+{tool:"MSXi",cat:"Forecast & Pipeline",title:"Territory Pipeline Roll-up",desc:"Roll up team pipeline with coverage, stage health, and where to coach.",tags:["manager","GM","pipeline","coverage"],
+prompt:`Roll up my team's pipeline from MSXi for [quarter]. Show pipeline vs target and coverage ratio by seller and solution area, stage distribution and aging, and where coverage is thin. Identify the [3] sellers who need pipeline-generation help and the [3] deals across the team most worth my time. Output a clean summary with a short "where to focus" note.`},
+
+{tool:"MSX",cat:"Deal Review",title:"Deal Inspection / Risk Review",desc:"Inspect a key deal for gaps and produce sharp review questions.",tags:["manager","deal-review","inspection"],
+prompt:`Inspect opportunity [name] in MSX for a deal review. Assess qualification completeness, stakeholder coverage, competitive position, close plan, and timeline realism. List what's strong, what's missing, and the [5] toughest questions I should ask the seller to pressure-test the deal. Give a confidence read ([high/medium/low]) with the reason.`},
+
+{tool:"MSXi",cat:"Leadership & Coaching",title:"Win/Loss Pattern Analysis",desc:"Find the patterns behind recent wins and losses to guide coaching.",tags:["manager","GM","win-loss"],
+prompt:`Analyze my team's closed-won and closed-lost opportunities in MSXi over the last [2 quarters]. Surface patterns by solution area, competitor, deal size, sales stage where deals die, and cycle time. Summarize the top [3] reasons we win and [3] reasons we lose, and recommend a coaching focus for the team.`},
+
+{tool:"MSX",cat:"Leadership & Coaching",title:"1:1 Coaching Prep from CRM",desc:"Prepare a data-grounded 1:1 for a seller from their CRM activity and pipeline.",tags:["manager","coaching","1:1"],
+prompt:`Prepare for my 1:1 with a seller using their MSX activity and pipeline (no performance judgments — just facts). Summarize pipeline vs quota, stage health, aging deals, activity level, and the [2] deals most worth coaching this week. Suggest [3] open coaching questions and one development theme to discuss. Frame it constructively.`},
+
+{tool:"Teams",cat:"Leadership & Coaching",title:"Deal Room / Standup Summary",desc:"Summarize a pursuit Teams channel into status, blockers, and next actions.",tags:["manager","standup","summary"],
+prompt:`Summarize the [deal/pursuit] Teams channel for the last [week]. Give current status, decisions made, open blockers with owners, and the next [3] actions with dates. Flag anything stuck waiting on a person or approval. Keep it to a crisp update I can post back to the channel.`},
+
+{tool:"Lynx",cat:"Forecast & Pipeline",title:"Quarterly Landing Scenarios",desc:"Model best/expected/worst landing scenarios for the quarter with the swing deals.",tags:["GM","director","scenarios"],
+prompt:`Using Lynx and pipeline data for [team/territory], model three landing scenarios for [quarter] — conservative, expected, and stretch — with the assumptions and the specific deals that move us between them. Identify the [3] deals with the biggest swing and what we'd need to do to pull each into the quarter.`},
+
+/* ---- Industry Advisor (FSI) ---- */
+{tool:"Seismic",cat:"Industry & Executive",title:"FSI Industry POV Brief",desc:"Assemble an industry point-of-view brief tailored to a banking/insurance/capital-markets customer.",tags:["industry-advisor","FSI","POV"],feat:1,
+prompt:`Build an industry point-of-view brief for [account] in [banking / insurance / capital markets]. Cover the [2-3] business and regulatory trends shaping their segment, the strategic priorities those imply, where we can credibly help, and [3] talking points an executive will find relevant. Pull supporting assets from Seismic and keep it executive-ready.`},
+
+{tool:"Seismic",cat:"Industry & Executive",title:"QBR / EBC Deck Outline",desc:"Outline a customer QBR or executive briefing deck with the right narrative and proof.",tags:["AE","industry-advisor","QBR","EBC"],
+prompt:`Outline a [QBR / executive briefing] deck for [account]. Propose a slide-by-slide flow: where we are (value delivered to date), their priorities, our recommendations by solution area, proof points/references, the roadmap, and clear asks. For each slide note the key message and the asset to pull from Seismic. Keep the narrative tight and outcome-led.`},
+
+{tool:"Outlook",cat:"Industry & Executive",title:"Customer-Ready One-Pager",desc:"Draft a concise, customer-facing one-pager summarizing a proposal or value story.",tags:["AE","one-pager","value"],
+prompt:`Draft a customer-ready one-pager for [account] on [proposal/solution]. Structure it as: the business outcome, what we propose, how it works at a high level, the expected value/ROI, and the next step. Plain language, no internal jargon, confident and concise. Mark any figure that needs validation before I share it.`},
+
+/* ---- Business Management / Operations ---- */
+{tool:"MSXi",cat:"Business Management",title:"Rhythm of Business (ROB) Report",desc:"Generate a recurring ROB summary across pipeline, consumption, and execution.",tags:["BM","ROB","operations"],
+prompt:`Generate a [weekly/monthly] Rhythm of Business summary for [team/segment] from MSXi. Cover revenue/consumption vs target, pipeline health and coverage, key wins and losses, execution risks, and the [3] things leadership should act on. Present it as a clean, skimmable exec summary with a metrics table up top.`},
+
+{tool:"MSXi",cat:"Business Management",title:"Scorecard Summary",desc:"Summarize a team scorecard into headline metrics, movers, and watch items.",tags:["GM","director","scorecard"],
+prompt:`Summarize the scorecard for [team/segment] from our systems. Lead with the headline metrics vs target, what moved most since last period and why, the [3] strongest and [3] weakest areas, and the watch items for next period. Keep it factual and concise for a leadership review.`},
+
+{tool:"Outlook",cat:"Business Management",title:"Meeting Prep Packet",desc:"Build a prep packet for an upcoming customer or leadership meeting from mail and CRM.",tags:["AE","exec-admin","meeting-prep"],
+prompt:`Build a prep packet for my upcoming meeting with [account/attendees] on [date]. Pull the latest from recent email threads and MSX: meeting objective, attendees and their roles, account status and open opportunities, recent interactions, likely topics and risks, and the [3] outcomes I should drive. End with suggested talking points and questions.`}
+];
+
+/* ============================ INSURANCE (FSI) CUSTOMER USE CASES ============================ */
+/* Separate, customer-facing scenarios across the insurance value chain — for GA. No carrier names, ever. */
+const INS_AREAS={
+  "Underwriting":"#4F46E5",
+  "Claims":"#DC2626",
+  "Policy & Servicing":"#06748C",
+  "Distribution":"#B146C2",
+  "Actuarial & Pricing":"#0F766E",
+  "Compliance & Regulatory":"#B45309",
+  "Reinsurance":"#1D4ED8"
+};
+const INSURANCE_USECASES=[
+/* -------- UNDERWRITING -------- */
+{area:"Underwriting",persona:"Underwriter",title:"Submission Triage & Prioritization",desc:"Score and rank new-business submissions against appetite, flag missing data, and order by premium potential.",tags:["appetite","triage","new-business"],
+prompt:`Review the new-business submissions in my queue for [line of business]. For each submission, extract insured occupancy, total insured value, requested limits/deductibles, and any missing underwriting information. Score each against our [appetite guide] as In-appetite / Marginal / Decline-recommended with a one-line rationale, and rank by premium potential. Output a triage table and flag every submission missing data needed to quote. Do not bind or decline — recommend only.`},
+
+{area:"Underwriting",persona:"Underwriter",title:"Loss Run Risk Summary",desc:"Turn multi-year loss runs into frequency, severity, large-loss and loss-ratio trends with an underwriting read.",tags:["loss-runs","risk","trend"],
+prompt:`Summarize the attached [5-year] loss runs for this account. Show total incurred, claim frequency and severity by year and cause of loss, all large losses over [$50,000], and the loss-ratio trend. Call out any adverse development or open claims, and give an underwriting read on whether the risk is improving or deteriorating. List the [3] questions I should ask before quoting.`},
+
+{area:"Underwriting",persona:"Underwriter",title:"Property COPE / Exposure Brief",desc:"Build a property exposure brief with construction, occupancy, protection, exposure and CAT notes.",tags:["property","COPE","CAT"],
+prompt:`Build a property exposure brief from the attached [statement of values / schedule]. Capture Construction, Occupancy, Protection and Exposure (COPE) details, note catastrophe exposure (wind / flood / quake) by location, and highlight any locations with high TIV and low protection class. Recommend [3] underwriting actions to close exposure gaps. Keep it to one page.`},
+
+/* -------- CLAIMS -------- */
+{area:"Claims",persona:"Adjuster",title:"FNOL Summary & Routing",desc:"Convert a First Notice of Loss into a structured claim record with a recommended handling track.",tags:["FNOL","intake","routing"],
+prompt:`Summarize this First Notice of Loss into a structured claim record: policyholder, policy number, date and cause of loss, description, estimated severity, coverage line, and any injuries or third parties involved. Recommend the right handling track ([fast-track / standard / complex / SIU review]) with a one-line reason, and list the next [3] actions for the adjuster. Flag any immediate coverage questions.`},
+
+{area:"Claims",persona:"Claims Examiner",title:"Claim File Chronology",desc:"Assemble a clean timeline of events, payments, reserves and communications from a claim file.",tags:["chronology","file-review","reserves"],
+prompt:`From the documents in this claim file, build a clean chronology of events with dates, payments made, reserves set, and key communications. Highlight any coverage questions, reserve changes, or points where action stalled. Close with a [5]-bullet current-status summary suitable for a file review. Do not alter reserves — summarize only.`},
+
+{area:"Claims",persona:"Claims Examiner",title:"Coverage Position Letter Draft",desc:"Draft a compliant reservation-of-rights / coverage letter grounded in the policy provisions cited.",tags:["coverage","letter","compliant"],
+prompt:`Draft a [reservation of rights / coverage position] letter for claim [number] based on the facts in this file and the [policy form and endorsements] cited. Use clear, compliant, non-admission language, reference the specific policy provisions, and keep it under [one page]. Mark every place that needs adjuster or legal review before it is sent.`},
+
+{area:"Claims",persona:"SIU Analyst",title:"Fraud / SIU Signal Scan",desc:"Surface red-flag indicators with supporting evidence and a referral recommendation — signals only.",tags:["fraud","SIU","red-flags"],
+prompt:`Review this claim for potential red-flag indicators — timing relative to policy inception, prior-claim patterns, inconsistent statements, and documentation anomalies. List each signal with the supporting evidence and give an overall [low / medium / high] SIU referral recommendation. Do NOT make a fraud determination — surface and explain signals only.`},
+
+/* -------- POLICY & SERVICING -------- */
+{area:"Policy & Servicing",persona:"Service Rep",title:"Policy Q&A / Coverage Explainer",desc:"Answer a policyholder's coverage question in plain language, quoting the exact provision.",tags:["coverage","plain-language","service"],
+prompt:`Using the attached [policy and endorsements], answer this policyholder question in plain language: "[question]". Quote the specific provision that applies, explain what is and isn't covered with a short example, and note any sub-limits, deductibles, or conditions. End with a one-line "what this means for you" summary. Do not give legal advice.`},
+
+{area:"Policy & Servicing",persona:"Service Rep",title:"Endorsement Impact Summary",desc:"Explain how a mid-term change affects coverage, limits and premium, and what info is needed.",tags:["endorsement","mid-term","change"],
+prompt:`The policyholder wants to [add a location / increase limits / add an additional insured]. Summarize how this endorsement changes coverage, limits, and premium, list any new underwriting information required, and draft a short, friendly explanation of the change and its effective date for the customer.`},
+
+{area:"Policy & Servicing",persona:"Account Manager",title:"Renewal Review Brief",desc:"Compare expiring vs proposed terms, summarize exposure/loss changes, and surface talking points.",tags:["renewal","review","retention"],
+prompt:`Prepare a renewal brief for this account: compare expiring vs proposed terms (limits, deductibles, premium, key endorsements), summarize exposure and loss changes since last year, and flag any coverage gaps or rate changes the customer is likely to ask about. Suggest [2] talking points and [1] cross-sell idea.`},
+
+/* -------- DISTRIBUTION -------- */
+{area:"Distribution",persona:"Agent / Broker",title:"Quote Comparison for the Insured",desc:"Build a carrier-neutral side-by-side of quotes with the material coverage differences in plain language.",tags:["quotes","comparison","advisory"],
+prompt:`Compare these [3] quotes side by side for the customer: a carrier-neutral table of limits, deductibles, key coverages, exclusions, and premium. Call out the [2–3] most material coverage differences in plain language and note which option best fits a [risk profile]. Keep it balanced and factual — no recommendation to a specific carrier unless I ask.`},
+
+{area:"Distribution",persona:"Agent / Broker",title:"Appetite & Submission Guide",desc:"Match a prospect to in-appetite products and draft a complete underwriter-ready submission summary.",tags:["appetite","submission","prospecting"],
+prompt:`Given this prospect's [industry, size, and exposures], tell me which of our [products / programs] are in appetite, exactly what information underwriting will need for a complete submission, and then draft a clean submission summary I can send to the underwriter. Note any obvious declinations up front.`},
+
+/* -------- ACTUARIAL & PRICING -------- */
+{area:"Actuarial & Pricing",persona:"Pricing Actuary",title:"Rate Change Narrative",desc:"Explain the drivers behind a proposed rate change for an internal pricing review.",tags:["pricing","rate","narrative"],
+prompt:`Summarize the drivers behind the proposed [X%] rate change for the [line / segment]: loss trend, frequency and severity, expense and reinsurance changes. Write a clear narrative for an internal pricing review, separating data-supported drivers from assumptions, and list the [3] biggest sensitivities. Do not change any rate figures.`},
+
+{area:"Actuarial & Pricing",persona:"Reserving Actuary",title:"Reserving Commentary",desc:"Draft plain-language reserve commentary from development triangles and flag segments to watch.",tags:["reserving","triangles","IBNR"],
+prompt:`From the attached triangles, summarize the reserve position for [line]: paid and incurred development, IBNR movement quarter over quarter, and any signs of adverse or favorable development. Draft plain-language commentary for the reserve review and flag the segments that warrant a deeper look.`},
+
+/* -------- COMPLIANCE & REGULATORY -------- */
+{area:"Compliance & Regulatory",persona:"Compliance Analyst",title:"Filing / Bulletin Action Summary",desc:"Turn a regulatory bulletin or filing requirement into an owner-assigned action checklist.",tags:["regulatory","filing","checklist"],
+prompt:`Summarize this [regulatory bulletin / rate filing requirement] for [state and line]: what it requires, who it affects, the effective date, and the actions our [underwriting / compliance / product] teams must take. Output an action checklist with an owner and a deadline column. Flag anything ambiguous that needs legal interpretation.`},
+
+{area:"Compliance & Regulatory",persona:"Complaints Handler",title:"Customer Complaint Response Draft",desc:"Summarize a complaint, surface the regulatory timeline, and draft an empathetic compliant response.",tags:["complaint","response","empathy"],
+prompt:`Summarize this customer complaint, identify the core issue and any regulatory response timeline, and draft a professional, empathetic response that addresses each point and explains next steps. Reference the relevant policy provision where needed. Flag anything that must be reviewed by compliance before it is sent.`},
+
+/* -------- REINSURANCE -------- */
+{area:"Reinsurance",persona:"Reinsurance Analyst",title:"Treaty / Slip Summary",desc:"Build a one-page reference of a reinsurance treaty and flag year-over-year term changes.",tags:["treaty","reinsurance","placement"],
+prompt:`Summarize this [reinsurance treaty / slip]: structure (quota share / excess of loss), layers and attachment points, ceding commission, exclusions, reinstatement terms, and key conditions. Build a one-page reference and flag any terms that differ from last year's placement.`}
+];
+let activeTool="";       // "" = all
+let favView=false;
+let activeRole="";       // "" = all roles
+let insArea="";          // "" = all insurance areas
+let industry="";         // "" = no lens
+let grouped=localStorage.getItem("fpl-grouped")==="1";
+const COLLAPSED=new Set(JSON.parse(localStorage.getItem("fpl-collapsed")||"[]"));
+const FAVS=new Set(JSON.parse(localStorage.getItem("fpl-favs")||"[]"));
+const COPYCOUNT=JSON.parse(localStorage.getItem("fpl-copycount")||"{}");
+const pid=p=>p.tool+"|"+p.title;
+
+const INDUSTRIES=["Financial Services","Banking & Capital Markets","Insurance","Healthcare & Life Sciences","Pharmaceuticals & Biotech","Retail & Consumer Goods","Manufacturing","Automotive & Mobility","Aerospace & Defense","Energy & Utilities","Oil & Gas","Public Sector & Government","Education","Nonprofit & NGO","Telco, Media & Gaming","Travel, Transport & Logistics","Hospitality","Real Estate & Construction","Professional Services","Agriculture","Sports & Entertainment"];
+const AGENTS={
+  "":{label:"Open: copy only", url:""},
+  "m365":{label:"Open in M365 Copilot", url:"https://m365.cloud.microsoft/chat"},
+  "copilot":{label:"Open in Copilot", url:"https://copilot.microsoft.com"},
+  "chatgpt":{label:"Open in ChatGPT", url:"https://chat.openai.com"}
+};
+let agent=localStorage.getItem("fpl-agent")||"";
+let FEATURED_POOL=[], featIdx=0, featTimer=null, featPaused=false;
+
+function applyLens(text){
+  if(!industry) return text;
+  return text+`\n\nIndustry context: tailor everything above specifically for a ${industry} customer — use ${industry}-relevant examples, regulations, terminology, and buying priorities.`;
+}
+
+/* ============================ INIT UI ============================ */
+/* ===== Role filter (maps role-tagged + original prompts to FSI field roles) ===== */
+const ROLES=[
+  {key:"AE", short:"Account Exec", icon:"👔", color:"#4F46E5",
+   tags:["AE"],
+   cats:["Account Planning","Account View","Activities","Close Plans","Leads","Milestones","Next Best Action","Opportunities","Opportunity Management","Pipeline Hygiene","Qualification","Renewals","Whitespace","Cross-sell","Data Quality","Deal Review","Follow-up","Industry & Executive"]},
+  {key:"ATS", short:"Tech Strategist", icon:"🛰️", color:"#0F766E",
+   tags:["ATS","CSA"],
+   cats:["Technical Strategy","Adoption","Consumption","Utilization","ACR Review","Service Mix"]},
+  {key:"Specialist", short:"Specialist", icon:"🎯", color:"#B146C2",
+   tags:["specialist"],
+   cats:["Solution Plays","Competitive","Compare","Proof","Playcards","Enablement","Content Pack"]},
+  {key:"CSAM", short:"Customer Success", icon:"🤝", color:"#06748C",
+   tags:["CSAM"],
+   cats:["Customer Success","Adoption","Consumption","Renewals"]},
+  {key:"Manager", short:"Sales Leader", icon:"📊", color:"#DC2626",
+   tags:["manager","GM","director","VP","BM","exec-admin"],
+   cats:["Leadership & Coaching","Forecast & Pipeline","Forecasting","Confidence","Coverage","Quota","Risk","Scenario","Attainment","Ranking","Deep Dive","Win/Loss","Executive","Revenue","Reporting","Deal Review","Business Management"]},
+  {key:"Industry", short:"Industry Advisor", icon:"🏛", color:"#B45309",
+   tags:["industry-advisor"],
+   cats:["Industry & Executive","Briefings"]}
+];
+function prolesFor(p){
+  const set=new Set(); const tl=p.tags.map(t=>t.toLowerCase());
+  ROLES.forEach(r=>{ if(r.tags.some(t=>tl.includes(t.toLowerCase())) || r.cats.includes(p.cat)) set.add(r.key); });
+  return set;
+}
+function roleLabel(k){const r=ROLES.find(x=>x.key===k); return r?r.short:k;}
+function buildRoleChips(){
+  const el=document.getElementById("roleChips"); if(!el)return;
+  let html=`<span class="rolelbl">For your role</span>`;
+  html+=`<button class="rolechip ${activeRole===''?'active':''}" onclick="filterRole('')">All roles</button>`;
+  ROLES.forEach(r=>{
+    const cnt=PROMPTS.filter(p=>prolesFor(p).has(r.key)).length;
+    html+=`<button class="rolechip ${activeRole===r.key?'active':''}" onclick="filterRole('${r.key}')" style="--rc:${r.color}"><span class="rc-ic">${r.icon}</span>${r.short} <span class="cnt">${cnt}</span></button>`;
+  });
+  el.innerHTML=html;
+}
+function filterRole(k){activeRole=(k===activeRole)?"":k; favView=false; syncFavBtns(); buildRoleChips(); render();}
+function buildToolChips(){
+  const el=document.getElementById("toolChips");
+  const counts={}; PROMPTS.forEach(p=>counts[p.tool]=(counts[p.tool]||0)+1);
+  let html=`<button class="chip ${activeTool===''?'active':''}" onclick="filterTool('')">All <span class="cnt">${PROMPTS.length}</span></button>`;
+  Object.keys(TOOLS).forEach(t=>{
+    html+=`<button class="chip ${activeTool===t?'active':''}" onclick="filterTool('${t}')">
+      <span class="dot" style="background:${TOOLS[t].c}"></span>${t} <span class="cnt">${counts[t]||0}</span></button>`;
+  });
+  el.innerHTML=html;
+}
+function buildCatOptions(){
+  const sel=document.getElementById("catSelect");
+  const pool=activeTool?PROMPTS.filter(p=>p.tool===activeTool):PROMPTS;
+  const cats=[...new Set(pool.map(p=>p.cat))].sort();
+  const cur=sel.value;
+  sel.innerHTML=`<option value="">All categories</option>`+cats.map(c=>`<option value="${c}">${c}</option>`).join("");
+  if(cats.includes(cur)) sel.value=cur;
+}
+function buildHeroStats(){
+  document.getElementById("heroStats").innerHTML=`
+    <div class="hero-stats-inner">
+      <div class="hstat"><div class="hs-ic" style="background:radial-gradient(circle at 50% 40%,rgba(149,128,247,.28),rgba(149,128,247,.06)); color:#b9a8ff; box-shadow:0 0 22px rgba(149,128,247,.5), inset 0 0 14px rgba(149,128,247,.2)">📋</div><div><div class="n">${PROMPTS.length+INSURANCE_USECASES.length}</div><div class="l">ready-to-run prompts<br><a onclick="goLibrary()">Browse prompts →</a></div></div></div>
+      <div class="hstat"><div class="hs-ic" style="background:radial-gradient(circle at 50% 40%,rgba(95,167,234,.28),rgba(95,167,234,.06)); color:#7fb6f0; box-shadow:0 0 22px rgba(95,167,234,.5), inset 0 0 14px rgba(95,167,234,.2)">🛠️</div><div><div class="n">6</div><div class="l">tools covered<br><a onclick="goLibrary()">View tools →</a></div></div></div>
+      <div class="hstat"><div class="hs-ic" style="background:radial-gradient(circle at 50% 40%,rgba(216,143,226,.28),rgba(216,143,226,.06)); color:#d68fe2; box-shadow:0 0 22px rgba(216,143,226,.5), inset 0 0 14px rgba(216,143,226,.2)">💼</div><div><div class="n">${[...new Set(PROMPTS.map(p=>p.cat))].length}</div><div class="l">job categories<br><a onclick="goBrowse()">Explore categories →</a></div></div></div>
+      <div class="hstat"><div class="hs-ic" style="background:radial-gradient(circle at 50% 40%,rgba(95,211,234,.28),rgba(95,211,234,.06)); color:#6fe3f5; box-shadow:0 0 22px rgba(95,211,234,.5), inset 0 0 14px rgba(95,211,234,.2)">🛡️</div><div><div class="n">0</div><div class="l">customer names stored<br><a onclick="toast('No customer or submitter names are ever stored — every prompt is generic and copy-paste ready.')">Learn about privacy →</a></div></div></div>
+    </div>`;
+}
+
+/* ===== Weekly saves (auto-increments every week) ===== */
+const WS_ANCHOR=Date.UTC(2026,5,15);   // Mon Jun 15 2026
+const WS_BASE=124;                     // value for the current (anchor) week
+function wsWeekIndex(){return Math.max(0,Math.floor((Date.now()-WS_ANCHOR)/(7*864e5)));}
+function wsInc(w){const x=Math.sin(w*12.9898+78.233)*43758.5453; return 5+Math.floor((x-Math.floor(x))*6);} // 5..10, deterministic
+function wsValue(w){let v=WS_BASE; if(w>0){for(let i=1;i<=w;i++)v+=wsInc(i);} else if(w<0){for(let i=0;i>w;i--)v-=wsInc(i);} return v;}
+function buildWeeklySaves(range){
+  const el=document.getElementById("weeklySaves"); if(!el)return;
+  range=range||el.dataset.range||"this";
+  el.dataset.range=range;
+  const wNow=wsWeekIndex();
+  const span=range==="this"?10:range==="4w"?4:12;
+  const start=wNow-span+1;
+  const vals=[]; for(let w=start;w<=wNow;w++)vals.push(wsValue(w));
+  const cur=wsValue(wNow), prev=wsValue(wNow-1);
+  const pct=prev?Math.round(((cur-prev)/prev)*100):0;
+  const min=Math.min(...vals), max=Math.max(...vals), rng=(max-min)||1;
+  const W=300,H=64,n=vals.length;
+  const pts=vals.map((v,i)=>[ (n>1?i/(n-1):0)*W, H-((v-min)/rng)*(H-8)-4 ]);
+  const line=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area=`M0 ${H} `+pts.map(p=>"L"+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ")+` L${W} ${H} Z`;
+  const last=pts[pts.length-1];
+  el.innerHTML=`
+    <div class="side-head">
+      <div class="side-title">Weekly saves</div>
+      <select class="range-sel" onchange="buildWeeklySaves(this.value)">
+        <option value="this"${range==="this"?" selected":""}>This week</option>
+        <option value="4w"${range==="4w"?" selected":""}>Last 4 weeks</option>
+        <option value="12w"${range==="12w"?" selected":""}>Last 12 weeks</option>
+      </select>
+    </div>
+    <div class="ws-row">
+      <div class="ws-num">${cur.toLocaleString()}</div>
+      <div class="ws-delta${pct<0?" down":""}">${pct<0?"↓":"↑"} ${Math.abs(pct)}%</div>
+    </div>
+    <div class="ws-sub">vs last week</div>
+    <svg class="ws-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="wsFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5b8cff" stop-opacity="0.28"/>
+          <stop offset="100%" stop-color="#5b8cff" stop-opacity="0"/>
+        </linearGradient>
+        <linearGradient id="wsLine" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#7c4dff"/>
+          <stop offset="100%" stop-color="#39a0ff"/>
+        </linearGradient>
+      </defs>
+      <path d="${area}" fill="url(#wsFill)"/>
+      <path d="${line}" fill="none" stroke="url(#wsLine)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="3.4" fill="#39a0ff"/>
+    </svg>`;
+}
+
+/* ===== Top tools used (seeded, updates on clicks) ===== */
+const TT_BASE={MSXi:42,Outlook:24,Teams:18,Seismic:16,MSX:0,Lynx:0};
+const TT_CLICKS=JSON.parse(localStorage.getItem("fpl-toolclicks")||"{}");
+function recordToolUse(tool){if(!tool||!(tool in TT_BASE))return; TT_CLICKS[tool]=(TT_CLICKS[tool]||0)+1; localStorage.setItem("fpl-toolclicks",JSON.stringify(TT_CLICKS)); buildTopTools();}
+function buildTopTools(){
+  const el=document.getElementById("topTools"); if(!el)return;
+  const ICONS={Outlook:"✉",Teams:"👥",MSX:"▦",MSXi:"M",Lynx:"🐾",Seismic:"◆"};
+  const counts=Object.keys(TT_BASE).map(t=>({t, c:TT_BASE[t]+(TT_CLICKS[t]||0)}));
+  const total=counts.reduce((a,b)=>a+b.c,0)||1;
+  const top=counts.sort((a,b)=>b.c-a.c).slice(0,4);
+  const maxPct=Math.max(...top.map(x=>x.c/total));
+  el.innerHTML=`
+    <div class="side-head"><div class="side-title">Top tools used</div></div>
+    ${top.map(x=>{
+      const pct=Math.round((x.c/total)*100);
+      const w=Math.max(6,Math.round((x.c/total)/maxPct*100));
+      const c=TOOLS[x.t].c;
+      return `<div class="tt-row">
+        <div class="tt-ic" style="background:${c}">${ICONS[x.t]||x.t[0]}</div>
+        <div class="tt-name">${x.t}</div>
+        <div class="tt-track"><div class="tt-fill" style="width:${w}%; background:linear-gradient(90deg,${c},${c}99)"></div></div>
+        <div class="tt-pct">${pct}%</div>
+      </div>`;
+    }).join("")}`;
+}
+function buildHeroChips(){
+  const el=document.getElementById("heroChips"); if(!el)return;
+  const ICONS={Outlook:"✉",Teams:"👥",MSX:"▦",MSXi:"▶",Lynx:"🐾",Seismic:"◆"};
+  el.innerHTML=Object.keys(TOOLS).map(t=>
+    `<button class="hero-chip" onclick="filterTool('${t}')"><span class="hc-ic" style="background:${TOOLS[t].c}">${ICONS[t]||t[0]}</span>${t}</button>`
+  ).join("");
+}
+function featuredInner(p){
+  const id=pid(p);
+  return `
+    <div class="feat-tile">📈</div>
+    <span class="feat-eyebrow">★ Featured prompt</span>
+    <h2>${escapeHtml(p.title)}</h2>
+    <div class="feat-desc">${highlightVars(applyLens(p.prompt).slice(0,180))}…</div>
+    <div class="feat-meta">
+      <div><span class="fm-ic" style="color:#fff;background:${TOOLS[p.tool].c}">${(p.tool[0])}</span>Tool: ${p.tool}</div>
+      <div><span class="fm-ic">🗂</span>Category: ${escapeHtml(p.cat)}</div>
+    </div>
+    <button class="feat-copy" onclick='copyPrompt(${JSON.stringify(id)}, this)'>⧉ Copy prompt</button>`;
+}
+function buildFeaturedRotation(){
+  const el=document.getElementById("featuredCard"); if(!el)return;
+  // Build a diverse rotation: one featured prompt per category, shuffled, so each is from a different category.
+  const byCat={};
+  PROMPTS.forEach(p=>{ if(!byCat[p.cat]) byCat[p.cat]=p; else if(p.feat && !byCat[p.cat].feat) byCat[p.cat]=p; });
+  let pool=Object.values(byCat);
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]];}
+  // Start with an MSX featured one if present (matches the design), else first.
+  const startIdx=pool.findIndex(p=>p.tool==="MSX"&&p.feat);
+  if(startIdx>0){const s=pool.splice(startIdx,1)[0]; pool.unshift(s);}
+  FEATURED_POOL=pool; featIdx=0;
+  renderFeatured(true);
+  if(featTimer) clearInterval(featTimer);
+  featTimer=setInterval(()=>{ if(document.hidden) return; featIdx=(featIdx+1)%FEATURED_POOL.length; renderFeatured(false); }, 5000);
+  el.addEventListener("mouseenter",()=>{ featPaused=true; });
+  el.addEventListener("mouseleave",()=>{ featPaused=false; });
+}
+function renderFeatured(immediate){
+  if(featPaused && !immediate) return;
+  const el=document.getElementById("featuredCard"); if(!el)return;
+  const p=FEATURED_POOL[featIdx];
+  if(immediate){ el.style.transform=""; el.style.opacity=""; el.innerHTML=featuredInner(p); return; }
+  if(el._flipping) return;
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce){ el.innerHTML=featuredInner(p); return; }
+  el._flipping=true;
+  const OUT=300, IN=420;
+  // Phase 1: flip the current page away (visual via WAAPI)
+  let aOut=null,aIn=null;
+  try{ aOut=el.animate(
+    [{transform:"rotateY(0deg)",opacity:1,filter:"brightness(1)"},
+     {transform:"rotateY(-90deg)",opacity:.25,filter:"brightness(1.35)"}],
+    {duration:OUT,easing:"cubic-bezier(.45,0,.75,.35)",fill:"forwards"}); }catch(e){}
+  // Phase 2: swap content at the edge-on point, then flip the new page in
+  setTimeout(()=>{
+    el.innerHTML=featuredInner(p);
+    try{ aIn=el.animate(
+      [{transform:"rotateY(90deg)",opacity:.25,filter:"brightness(1.35)"},
+       {transform:"rotateY(0deg)",opacity:1,filter:"brightness(1)"}],
+      {duration:IN,easing:"cubic-bezier(.2,.75,.3,1)"}); }catch(e){}
+  }, OUT);
+  // Phase 3: guaranteed reset to a flat, visible resting state
+  setTimeout(()=>{
+    try{ if(aOut)aOut.cancel(); }catch(e){}
+    try{ if(aIn)aIn.cancel(); }catch(e){}
+    el.style.transform=""; el.style.opacity=""; el._flipping=false;
+  }, OUT+IN+60);
+}
+function buildBrowsePills(){
+  const el=document.getElementById("browsePills"); if(!el)return;
+  const items=[
+    {ic:"⛃",label:"Pipeline hygiene",q:"hygiene"},
+    {ic:"👤",label:"Account planning",q:"account"},
+    {ic:"📅",label:"Meeting prep",q:"prep"},
+    {ic:"↪",label:"Follow-up",q:"follow-up"},
+    {ic:"📊",label:"ACR",q:"ACR"},
+    {ic:"◔",label:"QBR",q:"QBR"}
+  ];
+  el.innerHTML=items.map(i=>`<button class="browse-pill" onclick="browseSearch('${i.q}')"><span class="bp-ic">${i.ic}</span>${i.label}</button>`).join("")
+    +`<button class="browse-pill viewall" onclick="goLibrary()">View all <span class="bp-ic">›</span></button>`;
+}
+function browseSearch(q){
+  clearAll();
+  const s=document.getElementById("search"), h=document.getElementById("heroSearch");
+  s.value=q; if(h)h.value=q; render();
+  document.getElementById("library").scrollIntoView({behavior:"smooth"});
+}
+function goLibrary(){document.getElementById("library").scrollIntoView({behavior:"smooth"});}
+function goBrowse(){document.getElementById("browse").scrollIntoView({behavior:"smooth"});}
+function goInsurance(){document.getElementById("insurance").scrollIntoView({behavior:"smooth"});}
+function heroGo(){const h=document.getElementById("heroSearch"); const s=document.getElementById("search"); if(s)s.value=h.value; render(); document.getElementById("library").scrollIntoView({behavior:"smooth"});}
+
+/* ============================ RENDER ============================ */
+function escapeHtml(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+function highlightVars(s){return escapeHtml(s).replace(/\[[^\]]+\]/g,m=>`<span class="vr">${m}</span>`);}
+
+function getFiltered(){
+  const q=(document.getElementById("search").value||"").toLowerCase().trim();
+  const cat=document.getElementById("catSelect").value;
+  const sort=document.getElementById("sortSelect").value;
+  let list=PROMPTS.slice();
+  if(activeTool) list=list.filter(p=>p.tool===activeTool);
+  if(activeRole) list=list.filter(p=>{const s=prolesFor(p); return s.size===0||s.has(activeRole);});
+  if(cat) list=list.filter(p=>p.cat===cat);
+  if(favView) list=list.filter(p=>FAVS.has(pid(p)));
+  if(q){
+    list=list.filter(p=>(p.title+" "+p.desc+" "+p.cat+" "+p.tool+" "+p.tags.join(" ")+" "+p.prompt).toLowerCase().includes(q));
+  }
+  if(sort==="az") list.sort((a,b)=>a.title.localeCompare(b.title));
+  else if(sort==="tool") list.sort((a,b)=>a.tool.localeCompare(b.tool)||a.title.localeCompare(b.title));
+  else if(sort==="pop") list.sort((a,b)=>(COPYCOUNT[pid(b)]||0)-(COPYCOUNT[pid(a)]||0));
+  else list.sort((a,b)=>(b.feat||0)-(a.feat||0));
+  return {list,q,cat};
+}
+
+function cardHTML(p){
+  const id=pid(p), on=FAVS.has(id), cc=COPYCOUNT[id]||0;
+  return `<article class="card" style="--toolc:${TOOLS[p.tool].c}">
+    <div class="card-top">
+      <span class="toolbadge" title="Open ${p.tool}" style="cursor:pointer" onclick='openTool(${JSON.stringify(p.tool)})'><span class="dot" style="width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.85)"></span>${p.tool} ↗</span>
+      <span class="cat">${p.cat}${cc?` · copied ${cc}×`:""}</span>
+      <button class="star ${on?'on':''}" title="Favorite" onclick='toggleFav(${JSON.stringify(id)})'>${on?'★':'☆'}</button>
+    </div>
+    <h3>${escapeHtml(p.title)}</h3>
+    <div class="desc">${escapeHtml(p.desc)}</div>
+    <div class="tags">${p.tags.map(t=>`<span class="tag">#${t}</span>`).join("")}</div>
+    <div class="card-actions">
+      <button class="btn" onclick='togglePrompt(this)'>👁 View</button>
+      <button class="btn primary" onclick='copyPrompt(${JSON.stringify(id)}, this)'>⧉ Copy</button>
+      <button class="btn openbtn" onclick='openInAgent(${JSON.stringify(id)}, this)'>↗ Open</button>
+    </div>
+    <div class="prompt-box">${highlightVars(applyLens(p.prompt))}</div>
+  </article>`;
+}
+
+/* ===== Insurance use-case rendering (separate from field library) ===== */
+function insCardHTML(u,i){
+  const c=INS_AREAS[u.area]||"#06748C";
+  return `<article class="card usecase" style="--toolc:${c}">
+    <div class="card-top">
+      <span class="toolbadge">${escapeHtml(u.area)}</span>
+      <span class="cat">${u.persona?escapeHtml(u.persona):"Insurance"}</span>
+    </div>
+    <h3>${escapeHtml(u.title)}</h3>
+    <div class="desc">${escapeHtml(u.desc)}</div>
+    <div class="tags">${u.tags.map(t=>`<span class="tag">#${t}</span>`).join("")}</div>
+    <div class="card-actions">
+      <button class="btn" onclick='togglePrompt(this)'>👁 View</button>
+      <button class="btn primary" onclick='copyUseCase(${i}, this)'>⧉ Copy</button>
+    </div>
+    <div class="prompt-box">${highlightVars(u.prompt)}</div>
+  </article>`;
+}
+function buildInsChips(){
+  const el=document.getElementById("insChips"); if(!el)return;
+  const counts={}; INSURANCE_USECASES.forEach(u=>counts[u.area]=(counts[u.area]||0)+1);
+  let html=`<button class="ins-chip ${insArea===''?'active':''}" onclick="filterIns('')">All <span class="cnt">${INSURANCE_USECASES.length}</span></button>`;
+  html+=Object.keys(INS_AREAS).filter(a=>counts[a]).map(a=>
+    `<button class="ins-chip ${insArea===a?'active':''}" onclick="filterIns('${a.replace(/'/g,"\\'")}')"><span class="ic-dot" style="background:${INS_AREAS[a]}"></span>${a} <span class="cnt">${counts[a]}</span></button>`
+  ).join("");
+  el.innerHTML=html;
+}
+function renderInsurance(){
+  const el=document.getElementById("insGrid"); if(!el)return;
+  const list=INSURANCE_USECASES.map((u,i)=>({u,i})).filter(x=>!insArea||x.u.area===insArea);
+  el.innerHTML=list.length?list.map(x=>insCardHTML(x.u,x.i)).join("")
+    :`<div class="empty" style="grid-column:1/-1"><div class="big">🏛</div><div>No use cases in that area yet.</div></div>`;
+}
+function filterIns(a){insArea=(a===insArea)?"":a; buildInsChips(); renderInsurance();}
+function copyUseCase(i,btn){
+  const u=INSURANCE_USECASES[i]; if(!u)return;
+  navigator.clipboard.writeText(u.prompt).then(()=>{
+    if(btn){const o=btn.innerHTML; btn.innerHTML="✓ Copied"; setTimeout(()=>{btn.innerHTML=o;},1400);}
+    toast(`Copied "${u.title}" — insurance use case (${u.area})`);
+  }).catch(()=>toast("Copy failed — select the prompt text manually"));
+}
+
+function render(){
+  const {list,q,cat}=getFiltered();
+
+  const grid=document.getElementById("grid");
+  grid.classList.toggle("grouped",grouped);
+  if(!list.length){
+    grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="big">🔍</div><div>No prompts match that. Try clearing filters or a different search.</div></div>`;
+  } else if(grouped){
+    const groups={};
+    list.forEach(p=>{const k=p.cat; (groups[k]=groups[k]||[]).push(p);});
+    const keys=Object.keys(groups).sort((a,b)=>groups[b].length-groups[a].length||a.localeCompare(b));
+    grid.innerHTML=keys.map(k=>{
+      const items=groups[k], toolc=TOOLS[items[0].tool].c;
+      const collapsed=COLLAPSED.has(k);
+      return `<section class="catsec ${collapsed?'collapsed':''}" data-cat="${escapeHtml(k)}">
+        <button class="catsec-head" onclick='toggleCat(${JSON.stringify(k)})' aria-expanded="${!collapsed}">
+          <span class="catsec-caret">▸</span>
+          <span class="catsec-bar" style="background:${toolc}"></span>
+          <span class="catsec-title">${escapeHtml(k)}</span>
+          <span class="catsec-count">${items.length}</span>
+        </button>
+        <div class="catsec-body"><div class="catsec-grid">${items.map(cardHTML).join("")}</div></div>
+      </section>`;
+    }).join("");
+  } else {
+    grid.innerHTML=list.map(cardHTML).join("");
+  }
+
+  const total=PROMPTS.length;
+  document.getElementById("resultLine").textContent=
+    `Showing ${list.length} of ${total} prompts`+(activeRole?` · ${roleLabel(activeRole)}`:"")+(activeTool?` · ${activeTool}`:"")+(cat?` · ${cat}`:"")+(favView?` · favorites`:"")+(q?` · "${q}"`:"")+(grouped?` · grouped by category`:"");
+  document.getElementById("footStats").textContent=`${total} prompts · ${FAVS.size} favorited · ${Object.values(COPYCOUNT).reduce((a,b)=>a+b,0)} copies this device`;
+}
+
+/* ============================ ACTIONS ============================ */
+function filterTool(t){recordToolUse(t); activeTool=(t===activeTool)?"":t; favView=false; syncFavBtns(); buildToolChips(); buildCatOptions(); render(); document.getElementById("library").scrollIntoView({behavior:"smooth"});}
+function togglePrompt(btn){const box=btn.closest(".card").querySelector(".prompt-box"); const open=box.classList.toggle("open"); btn.innerHTML=open?"🙈 Hide prompt":"👁 View prompt";}
+function getPrompt(id){return PROMPTS.find(p=>pid(p)===id);}
+function copyPrompt(id,btn){
+  const p=getPrompt(id); if(!p)return;
+  navigator.clipboard.writeText(applyLens(p.prompt)).then(()=>{
+    COPYCOUNT[id]=(COPYCOUNT[id]||0)+1; localStorage.setItem("fpl-copycount",JSON.stringify(COPYCOUNT));
+    recordToolUse(p.tool);
+    if(btn){const o=btn.innerHTML; btn.innerHTML="✓ Copied"; setTimeout(()=>{btn.innerHTML=o;},1400);}
+    toast(`Copied "${p.title}"${industry?` · ${industry} lens`:""} — paste it into your agent`);
+    document.getElementById("footStats").textContent=`${PROMPTS.length} prompts · ${FAVS.size} favorited · ${Object.values(COPYCOUNT).reduce((a,b)=>a+b,0)} copies this device`;
+  }).catch(()=>toast("Copy failed — select the prompt text manually"));
+}
+function openInAgent(id,btn){
+  const p=getPrompt(id); if(!p)return;
+  navigator.clipboard.writeText(applyLens(p.prompt)).catch(()=>{});
+  COPYCOUNT[id]=(COPYCOUNT[id]||0)+1; localStorage.setItem("fpl-copycount",JSON.stringify(COPYCOUNT));
+  recordToolUse(p.tool);
+  const a=AGENTS[agent];
+  if(a&&a.url){
+    window.open(a.url,"_blank","noopener");
+    toast(`Prompt copied — opening ${a.label.replace('Open in ','')}. Press Ctrl/Cmd+V to paste.`);
+  } else {
+    if(btn){const o=btn.innerHTML; btn.innerHTML="✓ Copied"; setTimeout(()=>{btn.innerHTML=o;},1400);}
+    toast(`Copied "${p.title}" — pick an agent in the toolbar to auto-open it next time`);
+  }
+  document.getElementById("footStats").textContent=`${PROMPTS.length} prompts · ${FAVS.size} favorited · ${Object.values(COPYCOUNT).reduce((a,b)=>a+b,0)} copies this device`;
+}
+function toggleFav(id){
+  if(FAVS.has(id))FAVS.delete(id); else FAVS.add(id);
+  localStorage.setItem("fpl-favs",JSON.stringify([...FAVS]));
+  render();
+}
+function toggleCat(k){if(COLLAPSED.has(k))COLLAPSED.delete(k); else COLLAPSED.add(k); localStorage.setItem("fpl-collapsed",JSON.stringify([...COLLAPSED])); render();}
+function setGrouped(on){grouped=on; localStorage.setItem("fpl-grouped",on?"1":"0"); syncGroupBtn(); render();}
+function toggleGroup(){setGrouped(!grouped);}
+function syncGroupBtn(){const b=document.getElementById("groupBtn"); if(b){b.classList.toggle("active",grouped); b.innerHTML=grouped?"▤ Grouped":"▦ Grouped";}}
+function expandAllCats(){COLLAPSED.clear(); localStorage.setItem("fpl-collapsed","[]"); render();}
+function collapseAllCats(){const {list}=getFiltered(); list.forEach(p=>COLLAPSED.add(p.cat)); localStorage.setItem("fpl-collapsed",JSON.stringify([...COLLAPSED])); render();}
+function toggleMore(){
+  const p=document.getElementById("morePanel"), b=document.getElementById("moreBtn");
+  const open=p.classList.toggle("open");
+  b.classList.toggle("active",open); b.setAttribute("aria-expanded",open?"true":"false");
+  b.innerHTML=open?"⋯ Hide tools":"⋯ More tools";
+}
+function toggleFavView(){favView=!favView; syncFavBtns(); render(); if(favView)document.getElementById("library").scrollIntoView({behavior:"smooth"});}
+function syncFavBtns(){
+  const b=document.getElementById("favBtn"), n=document.getElementById("favNav");
+  if(b){b.classList.toggle("active",favView); b.innerHTML=favView?"★ Favorites":"☆ Favorites";}
+  if(n)n.textContent=favView?"★":"☆";
+}
+function surprise(){
+  const p=PROMPTS[Math.floor(Math.random()*PROMPTS.length)];
+  clearAll(); document.getElementById("search").value=p.title; render();
+  setTimeout(()=>{const card=[...document.querySelectorAll(".card")][0]; if(card){const btn=card.querySelector(".btn"); togglePrompt(btn); card.scrollIntoView({behavior:"smooth",block:"center"});}},120);
+  toast("🎲 Here's a random prompt for you");
+}
+function clearAll(){
+  activeTool=""; activeRole=""; favView=false; industry=""; syncFavBtns();
+  document.getElementById("search").value=""; document.getElementById("heroSearch").value="";
+  document.getElementById("catSelect").value=""; document.getElementById("sortSelect").value="default";
+  const ind=document.getElementById("industrySelect"); if(ind)ind.value="";
+  buildRoleChips(); buildToolChips(); buildCatOptions(); render();
+}
+function toast(msg){const t=document.getElementById("toast"); t.innerHTML="✓ "+msg; t.classList.add("show"); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),2400);}
+
+function syncAgentVisibility(){ document.body.classList.toggle("agent-on", !!agent); }
+
+function buildExtraSelects(){
+  const ind=document.getElementById("industrySelect");
+  ind.innerHTML=`<option value="">Industry: none</option>`+INDUSTRIES.map(i=>`<option value="${i}">Industry: ${i}</option>`).join("");
+  ind.value=industry;
+  const ag=document.getElementById("agentSelect");
+  ag.innerHTML=Object.keys(AGENTS).map(k=>`<option value="${k}">${AGENTS[k].label}</option>`).join("");
+  ag.value=agent;
+}
+function buildLaunchRail(){
+  const el=document.getElementById("launchRail");
+  el.innerHTML=`<span class="lbl">Launch the tool ↗</span>`+Object.keys(TOOLS).map(t=>
+    `<a class="launch" style="--lc:${TOOLS[t].c}" href="${TOOLS[t].url}" target="_blank" rel="noopener" title="Open ${t} — ${TOOLS[t].blurb}"><span class="dot"></span>${t}</a>`
+  ).join("");
+}
+function openTool(t){const u=TOOLS[t]&&TOOLS[t].url; if(u){window.open(u,"_blank","noopener"); toast(`Opening ${t}…`);}}
+function exportFavorites(){
+  const favs=PROMPTS.filter(p=>FAVS.has(pid(p)));
+  if(!favs.length){toast("No favorites yet — star some prompts first, then export"); return;}
+  const stamp=new Date().toISOString().slice(0,10);
+  const lensNote=industry?` (tailored for ${industry})`:"";
+  let md=`# Field Prompt Library — My Favorites${lensNote}\n\nExported ${stamp} · ${favs.length} prompts\n\n`;
+  const byTool={}; favs.forEach(p=>(byTool[p.tool]=byTool[p.tool]||[]).push(p));
+  Object.keys(byTool).forEach(t=>{
+    md+=`\n## ${t}\n`;
+    byTool[t].forEach(p=>{
+      md+=`\n### ${p.title}\n*${p.cat}* — ${p.desc}\n\nTags: ${p.tags.map(x=>"#"+x).join(" ")}\n\n\`\`\`\n${applyLens(p.prompt)}\n\`\`\`\n`;
+    });
+  });
+  const blob=new Blob([md],{type:"text/markdown"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download=`field-prompt-favorites-${stamp}.md`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  toast(`Exported ${favs.length} favorite prompt${favs.length>1?"s":""} to a .md file`);
+}
+function copyAllVisible(){
+  const {list}=getFiltered();
+  if(!list.length){toast("Nothing visible to copy — adjust your filters"); return;}
+  const lensNote=industry?` (tailored for ${industry})`:"";
+  const text=`Field Prompt Library — ${list.length} prompts${lensNote}\n`+
+    list.map((p,i)=>`\n${i+1}. [${p.tool} · ${p.cat}] ${p.title}\n${applyLens(p.prompt)}\n`).join("\n");
+  navigator.clipboard.writeText(text).then(
+    ()=>toast(`Copied all ${list.length} visible prompts to your clipboard`),
+    ()=>toast("Copy failed — try a smaller selection")
+  );
+}
+function importFavorites(ev){
+  const file=ev.target.files&&ev.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const txt=String(reader.result||"");
+    const titles=new Set();
+    // JSON export support
+    try{const j=JSON.parse(txt); if(Array.isArray(j)) j.forEach(t=>titles.add(String(t).trim()));}catch(e){}
+    // Markdown "### Title" headings
+    txt.split(/\r?\n/).forEach(line=>{const m=line.match(/^###\s+(.*\S)\s*$/); if(m)titles.add(m[1].trim());});
+    let added=0;
+    PROMPTS.forEach(p=>{if(titles.has(p.title)&&!FAVS.has(pid(p))){FAVS.add(pid(p)); added++;}});
+    localStorage.setItem("fpl-favs",JSON.stringify([...FAVS]));
+    syncFavBtns(); render();
+    toast(added?`Imported ${added} favorite${added>1?"s":""} (${FAVS.size} total)`:"No new matching favorites found in that file");
+  };
+  reader.readAsText(file);
+  ev.target.value="";
+}
+function printPDF(){
+  document.querySelectorAll(".prompt-box").forEach(b=>b.classList.add("open"));
+  const {list}=getFiltered();
+  toast(`Preparing ${list.length} prompts for print / PDF…`);
+  setTimeout(()=>window.print(),250);
+}
+
+/* ============================ WIRE UP ============================ */
+const sIn=document.getElementById("search"), hIn=document.getElementById("heroSearch");
+sIn.addEventListener("input",()=>{hIn.value=sIn.value; render();});
+hIn.addEventListener("input",()=>{sIn.value=hIn.value; render(); document.getElementById("library").scrollIntoView({behavior:"smooth"});});
+document.getElementById("catSelect").addEventListener("change",render);
+document.getElementById("sortSelect").addEventListener("change",render);
+document.getElementById("industrySelect").addEventListener("change",e=>{industry=e.target.value; render(); if(industry)toast(`Industry lens on: ${industry} — copies now tailor to it`);});
+document.getElementById("agentSelect").addEventListener("change",e=>{agent=e.target.value; localStorage.setItem("fpl-agent",agent); syncAgentVisibility();});
+document.addEventListener("keydown",e=>{
+  if(e.key==="/" && document.activeElement.tagName!=="INPUT" && document.activeElement.tagName!=="SELECT"){e.preventDefault(); hIn.focus();}
+  if(e.key==="Escape"){if(document.activeElement===sIn||document.activeElement===hIn){sIn.value="";hIn.value="";render();document.activeElement.blur();}}
+});
+const toTop=document.getElementById("toTop");
+addEventListener("scroll",()=>toTop.classList.toggle("show",scrollY>600));
+document.getElementById("grid").addEventListener("pointermove",e=>{
+  const card=e.target.closest(".card"); if(!card)return;
+  const r=card.getBoundingClientRect();
+  card.style.setProperty("--mx",((e.clientX-r.left)/r.width*100)+"%");
+});
+
+/* ============================ BOOT ============================ */
+syncThemeBtn(); buildHeroStats(); buildHeroChips(); buildFeaturedRotation(); buildBrowsePills(); buildRoleChips(); buildToolChips(); buildLaunchRail(); buildCatOptions(); buildExtraSelects(); buildInsChips(); renderInsurance(); syncAgentVisibility(); syncFavBtns(); syncGroupBtn(); render();
+requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.add("loaded")));
+</script>
+</body>
+</html>
